@@ -1,12 +1,18 @@
 define([
   'dcl',
-  'frozen/box2d/entities/Circle'
-], function(dcl, Circle){
+  'frozen/box2d/entities/Circle',
+  'frozen/plugins/loadImage!images/golf_texture.png'
+], function(dcl, Circle, ballTexture){
 
   'use strict';
 
   return dcl(Circle, {
-    img: null,
+    id: 'ball',
+    img: ballTexture,
+    staticBody: false,
+    radius: 8,
+    linearDamping : 0.5,
+    angularDamping : 0.4,
     draw: function(ctx){
       ctx.lineWidth = 1;
       ctx.fillStyle = '#FFF';
