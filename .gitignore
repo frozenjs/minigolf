@@ -2,6 +2,7 @@
 node_modules/
 deps/util/
 libs/
+dist/
 
 # These are dependencies of Frozen and shouldn't be committed if you are making a build
 # If you are not making a build, remove these 5 lines

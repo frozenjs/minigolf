@@ -27,6 +27,7 @@ var profile = (function(){
     },
 
     staticHasFeatures: {
+      "debug": 0,
       "config-deferredInstrumentation": 0,
       "config-dojo-loader-catches": 0,
       "config-tlmSiblingOfDojo": 0,

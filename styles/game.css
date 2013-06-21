@@ -7,10 +7,20 @@ a {
   color: #10B7FB;
 }
 
-#status {
-  text-align: center;
-}
-
 #gameArea {
   margin: 0 auto;
+}
+
+#created-by {
+  margin-right: 25px;
+  float: right;
+}
+
+.ui {
+  margin-left: 5px;
+  text-align: left;
+}
+
+.ui:first-child {
+  margin-left: 25px;
 }
