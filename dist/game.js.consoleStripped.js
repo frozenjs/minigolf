@@ -8574,7 +8574,7 @@ define([
 
     if(ball && (this.ui.scoreTime <= 0)){
       if(ball.collisions && ball.collisions.length > 0){
-        ball.collisions.forEach(function(collision){
+        _.forEach(ball.collisions, function(collision){
           if(collision.impulse > SOUND_IMPULSE_THRESHOLD){
             var gain = Math.min(collision.impulse, SOUND_IMPULSE_MAX) / SOUND_IMPULSE_MAX;
             clack.play(gain, 0);
@@ -8591,7 +8591,7 @@ define([
           ui.setTime('scoreTime');
           ui.totalScore += this.ui.strokes - 3;
           holeSound.play();
-          if(this.ui.strokes > 7){
+          if(ui.strokes > 7){
             laughSound.play();
           }
           box.setPosition(ball.id, goal.x, goal.y);
@@ -8601,13 +8601,13 @@ define([
           0 && console.log('too hard', dist, velocity);
           ui.setTime('messageTime');
         }
+      } else {
+        _.forEach(levelData[state.level].zones, function(zone){
+          if(ball && zone.pointInShape(ball)){
+            zone.applyImpulse(ball, box);
+          }
+        });
       }
-
-      _.forEach(levelData[state.level].zones, function(zone){
-        if(ball && zone.pointInShape(ball)){
-          zone.applyImpulse(ball, box);
-        }
-      });
     }
 
     ui.update(millis);
@@ -9713,7 +9713,7 @@ define(function(){
           "type": "Circle",
           "zone": true,
           "impulseInward": true,
-          "impulsePercentage": 1.5,
+          "impulsePercentage": 3,
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 5
         },
@@ -11631,9 +11631,8 @@ define([
   'lodash',
   'frozen/box2d/entities',
   'frozen/utils/scalePoints',
-  'frozen/plugins/loadImage!images/golf_texture.png',
   'frozen/plugins/loadImage!{0:images/hole1.png,1:images/hole2.png,2:images/hole3.png,3:images/hole4.png,4:images/hole5.png,5:images/hole6.png,6:images/hole7.png,7:images/hole8.png,8:images/hole9.png}'
-], function(Ball, state, levelData, zones, _, entities, scalePoints, ballTexture, backImgs){
+], function(Ball, state, levelData, zones, _, entities, scalePoints, backImgs){
 
   'use strict';
 
@@ -11672,14 +11671,8 @@ define([
     this.removeBodies(_.toArray(this.entities));
     // create our box2d instance
     state.ball = new Ball({
-      id: 'ball',
-      img: ballTexture,
-      staticBody: false,
       x: level.start.x,
-      y: level.start.y,
-      radius: 8,
-      linearDamping : 0.5,
-      angularDamping : 0.4
+      y: level.start.y
     });
     this.addBody(state.ball);
     state.goal = scalePoints(level.goal, 1/30);
@@ -11711,13 +11704,19 @@ define([
 'game/Ball':function(){
 define([
   'dcl',
-  'frozen/box2d/entities/Circle'
-], function(dcl, Circle){
+  'frozen/box2d/entities/Circle',
+  'frozen/plugins/loadImage!images/golf_texture.png'
+], function(dcl, Circle, ballTexture){
 
   'use strict';
 
   return dcl(Circle, {
-    img: null,
+    id: 'ball',
+    img: ballTexture,
+    staticBody: false,
+    radius: 8,
+    linearDamping : 0.5,
+    angularDamping : 0.4,
     draw: function(ctx){
       ctx.lineWidth = 1;
       ctx.fillStyle = '#FFF';
@@ -12059,6 +12058,38 @@ define([
 
   });
 
+});
+},
+'frozen/plugins/loadImage':function(){
+/**
+ * AMD Plugin for loading Images
+ * @module plugins/loadImage
+ * @example
+ * define([
+ *   'frozen/plugins/loadImage!someImage.png'
+ * ], function(someImage){
+ *
+ *   // Use someImage
+ *
+ * });
+ */
+
+define([
+  '../ResourceManager',
+  '../utils/parseString'
+], function(ResourceManager, parseString){
+
+  'use strict';
+
+  var rm = new ResourceManager();
+
+  return {
+    load: function(resource, req, callback, config){
+      resource = parseString(resource);
+      var res = rm.loadImage(resource);
+      callback(res);
+    }
+  };
 });
 },
 'game/zones':function(){
@@ -12453,38 +12484,6 @@ define([
     }
   });
 
-});
-},
-'frozen/plugins/loadImage':function(){
-/**
- * AMD Plugin for loading Images
- * @module plugins/loadImage
- * @example
- * define([
- *   'frozen/plugins/loadImage!someImage.png'
- * ], function(someImage){
- *
- *   // Use someImage
- *
- * });
- */
-
-define([
-  '../ResourceManager',
-  '../utils/parseString'
-], function(ResourceManager, parseString){
-
-  'use strict';
-
-  var rm = new ResourceManager();
-
-  return {
-    load: function(resource, req, callback, config){
-      resource = parseString(resource);
-      var res = rm.loadImage(resource);
-      callback(res);
-    }
-  };
 });
 },
 'game/UI':function(){
