@@ -1090,7 +1090,7 @@ define(function(){
           "type": "Circle",
           "zone": true,
           "impulseInward": true,
-          "impulsePercentage": 1.5,
+          "impulsePercentage": 3,
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 5
         },

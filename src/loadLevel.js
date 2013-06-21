@@ -6,9 +6,8 @@ define([
   'lodash',
   'frozen/box2d/entities',
   'frozen/utils/scalePoints',
-  'frozen/plugins/loadImage!images/golf_texture.png',
   'frozen/plugins/loadImage!{0:images/hole1.png,1:images/hole2.png,2:images/hole3.png,3:images/hole4.png,4:images/hole5.png,5:images/hole6.png,6:images/hole7.png,7:images/hole8.png,8:images/hole9.png}'
-], function(Ball, state, levelData, zones, _, entities, scalePoints, ballTexture, backImgs){
+], function(Ball, state, levelData, zones, _, entities, scalePoints, backImgs){
 
   'use strict';
 
@@ -47,14 +46,8 @@ define([
     this.removeBodies(_.toArray(this.entities));
     // create our box2d instance
     state.ball = new Ball({
-      id: 'ball',
-      img: ballTexture,
-      staticBody: false,
       x: level.start.x,
-      y: level.start.y,
-      radius: 8,
-      linearDamping : 0.5,
-      angularDamping : 0.4
+      y: level.start.y
     });
     this.addBody(state.ball);
     state.goal = scalePoints(level.goal, 1/30);
