@@ -17,7 +17,7 @@ define([
   _.forEach(levelData, function(level, idx){
     level.zones = [];
     level.backImg = backImgs[idx];
-    _.forEach(level.objs, function(obj){
+    _.forEach(level.entities, function(obj){
       if(obj.start){
         level.start = {x: obj.x, y: obj.y};
       }
@@ -49,19 +49,17 @@ define([
     state.ball = new Ball({
       id: 'ball',
       img: ballTexture,
-      staticBody : false,
+      staticBody: false,
       x: level.start.x,
       y: level.start.y,
       radius: 8,
       linearDamping : 0.5,
-      angularDamping : 0.4,
-      velocity : 0,
-      previousPoint : {x: level.start.x, y: level.start.y}
+      angularDamping : 0.4
     });
     this.addBody(state.ball);
     state.goal = scalePoints(level.goal, 1/30);
 
-    _.forEach(level.objs, function(obj){
+    _.forEach(level.entities, function(obj){
       console.log(obj);
       if(!obj.zone){
         var Entity = entities[obj.type];
