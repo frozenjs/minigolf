@@ -74,11 +74,12 @@ define([
       }
     },
     message: function(ctx, msg, color){
+      ctx.textAlign = 'center';
       ctx.fillStyle = color;
       ctx.strokeStyle = '#000';
       ctx.font = 'bold 40px arial';
-      ctx.fillText(msg, 180, 180);
-      ctx.strokeText(msg, 180, 180);
+      ctx.fillText(msg, ctx.canvas.width/2, 180);
+      ctx.strokeText(msg, ctx.canvas.width/2, 180);
     },
     setTime: function(time){
       this[time] = MAX_MESSAGE_TIME;

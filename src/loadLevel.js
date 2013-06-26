@@ -5,9 +5,10 @@ define([
   './zones',
   'lodash',
   'frozen/box2d/entities',
+  'frozen/box2d/joints',
   'frozen/utils/scalePoints',
-  'frozen/plugins/loadImage!{0:images/hole1.png,1:images/hole2.png,2:images/hole3.png,3:images/hole4.png,4:images/hole5.png,5:images/hole6.png,6:images/hole7.png,7:images/hole8.png,8:images/hole9.png}'
-], function(Ball, state, levelData, zones, _, entities, scalePoints, backImgs){
+  'frozen/plugins/loadImage!{0:images/hole1.png,1:images/hole2.png,2:images/hole3.png,3:images/hole4.png,4:images/hole5.png,5:images/hole6.png,6:images/hole7.png,7:images/hole8.png,8:images/hole9.png,9:images/hole10.png,10:images/hole11.png,11:images/hole12.png}'
+], function(Ball, state, levelData, zones, _, entities, joints, scalePoints, backImgs){
 
   'use strict';
 
@@ -44,6 +45,7 @@ define([
     level.maxGoalVelocity = level.maxGoalVelocity || MAX_VELOCITY_FOR_GOAL;
 
     this.removeBodies(_.toArray(this.entities));
+    this.removeJoints(_.toArray(this.joints));
     // create our box2d instance
     state.ball = new Ball({
       x: level.start.x,
@@ -58,7 +60,7 @@ define([
         var Entity = entities[obj.type];
         if(Entity){
           var ent = new Entity(obj);
-          ent.id = _.uniqueId();
+          //ent.id = _.uniqueId();
           self.addBody(ent);
         }
       } else {
@@ -70,6 +72,14 @@ define([
             level.zones.push(zone);
           }
         }
+      }
+    });
+    _.forEach(level.joints, function(obj){
+      var Joint = joints[obj.type];
+      if(Joint){
+        var ent = new Joint(obj);
+       // ent.id = _.uniqueId();
+        self.addJoint(ent);
       }
     });
   };
