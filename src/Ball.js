@@ -13,6 +13,7 @@ define([
     radius: 8,
     linearDamping : 0.5,
     angularDamping : 0.4,
+    touching: {},
     draw: function(ctx){
       ctx.lineWidth = 1;
       ctx.fillStyle = '#FFF';
