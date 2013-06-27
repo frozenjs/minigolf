@@ -1,24 +1,26 @@
 define([
-  './state',
   './levelData',
   'lodash',
-  'frozen/utils/distance',
+  'frozen/utils/radiansFromCenter',
   'frozen/plugins/loadSound!sounds/clack',
   'frozen/plugins/loadSound!sounds/hole',
   'frozen/plugins/loadSound!sounds/laugh'
-], function(state, levelData, _, distance, clack, holeSound, laughSound){
+], function(levelData, _, radiansFromCenter, clack, holeSound, laughSound){
 
   'use strict';
 
   var SOUND_IMPULSE_THRESHOLD = 1;
   var SOUND_IMPULSE_MAX = 50;
   var MAX_DISTANCE_FOR_GOAL = 0.4;
+  var ZONE_IMPULSE = 0.2;
 
   return function(millis){
-    var ball = this.entities.ball;
+    var entities = this.entities;
+    var ball = entities.ball;
     var ui = this.ui;
-    var goal = state.goal;
+    var goal = entities.goal;
     var box = this.box;
+    var level = levelData[this.level];
 
     if(ball && (this.ui.scoreTime <= 0)){
       if(ball.collisions && ball.collisions.length > 0){
@@ -30,11 +32,10 @@ define([
         });
       }
 
-      var dist = distance(ball, goal);
-      if(dist < MAX_DISTANCE_FOR_GOAL){
+      if(ball.touching.goal){
         var velocity = Math.sqrt(ball.linearVelocity.x * ball.linearVelocity.x + ball.linearVelocity.y * ball.linearVelocity.y);
-        console.log('goal', dist, velocity);
-        if(velocity < levelData[state.level].maxGoalVelocity){
+        console.log('goal', velocity);
+        if(velocity < level.maxGoalVelocity){
 
           ui.setTime('scoreTime');
           ui.totalScore += this.ui.strokes - 3;
@@ -46,13 +47,29 @@ define([
           box.setLinearVelocity(ball.id, 0, 0);
           box.setAngularVelocity(ball.id, 0);
         } else {
-          console.log('too hard', dist, velocity);
+          console.log('too hard', velocity);
           ui.setTime('messageTime');
         }
       } else {
-        _.forEach(levelData[state.level].zones, function(zone){
-          if(ball && zone.pointInShape(ball)){
-            zone.applyImpulse(ball, box);
+        _.forEach(ball.touching, function(touched, id){
+          if(!touched){
+            return;
+          }
+          var entity = entities[id];
+          if(entity.water){
+            var start = _.find(level.entities, { id: 'ball' });
+            box.setPosition(ball.id, start.x / box.scale, start.y / box.scale);
+            box.setLinearVelocity(ball.id, 0, 0);
+            box.setAngularVelocity(ball.id, 0);
+            ui.setTime('waterTime');
+          } else if(entity.type === 'Rectangle' || entity.type === 'Polygon'){
+            box.applyImpulseDegrees(ball.id, entity.impulseAngle, ZONE_IMPULSE * entity.impulsePercentage);
+          } else {
+            if(entity.impulseInward){
+              box.applyImpulse(ball.id, radiansFromCenter(entity, ball) + Math.PI, ZONE_IMPULSE * entity.impulsePercentage);
+            } else {
+              box.applyImpulse(ball.id, radiansFromCenter(entity, ball), ZONE_IMPULSE * entity.impulsePercentage);
+            }
           }
         });
       }
@@ -61,8 +78,8 @@ define([
     ui.update(millis);
 
     if(ui.changeLevel){
-      state.level++;
-      this.loadLevel(state.level);
+      this.level++;
+      this.loadLevel(this.level);
     }
   };
 

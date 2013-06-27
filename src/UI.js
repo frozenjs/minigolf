@@ -1,10 +1,9 @@
 define([
-  './state',
   './levelData',
   './getHoleScoreName',
   'dcl',
   'dojo/domReady!'
-], function(state, levelData, getHoleScoreName, dcl){
+], function(levelData, getHoleScoreName, dcl){
 
   'use strict';
 
@@ -17,8 +16,10 @@ define([
     totalScore: 0,
     messageTime: 0,
     scoreTime: 0,
+    waterTime: 0,
     strokes: 0,
     tooHard: false,
+    water: false,
     changeLevel: false,
     constructor: function(){
       this.scoreEl = document.getElementById('score');
@@ -39,6 +40,8 @@ define([
       if(this.messageTime > 0){
         this.messageTime -= millis;
         this.tooHard = true;
+      } else if(this.waterTime > 0){
+        this.water = true;
       } else {
         this.tooHard = false;
       }
@@ -49,9 +52,16 @@ define([
           this.changeLevel = true;
         }
       }
+
+      if(this.waterTime > 0){
+        this.waterTime -= millis;
+        if(this.waterTime <= 0){
+          this.water = false;
+        }
+      }
     },
-    draw: function(ctx){
-      if(state.level === levelData.length){
+    draw: function(ctx, level){
+      if(level === levelData.length){
         this.totalScore = 0;
         this.scoreEl.innerHTML = '';
       } else {
@@ -71,14 +81,18 @@ define([
         if(this.tooHard){
           this.message(ctx, 'Too Hard!', '#F00');
         }
+        if(this.water){
+          this.message(ctx, 'Water Hazard!', '#00F');
+        }
       }
     },
     message: function(ctx, msg, color){
+      ctx.textAlign = 'center';
       ctx.fillStyle = color;
       ctx.strokeStyle = '#000';
       ctx.font = 'bold 40px arial';
-      ctx.fillText(msg, 180, 180);
-      ctx.strokeText(msg, 180, 180);
+      ctx.fillText(msg, ctx.canvas.width/2, 180);
+      ctx.strokeText(msg, ctx.canvas.width/2, 180);
     },
     setTime: function(time){
       this[time] = MAX_MESSAGE_TIME;
