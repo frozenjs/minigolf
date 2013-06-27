@@ -1949,7 +1949,6 @@ define([], 1);
 },
 'game/game':function(){
 define([
-  './state',
   './initInput',
   './handleInput',
   './update',
@@ -1958,8 +1957,9 @@ define([
   './UI',
   'dojo/has',
   'frozen/box2d/Box',
-  'frozen/box2d/BoxGame'
-], function(state, initInput, handleInput, update, draw, loadLevel, UI, has, Box, BoxGame){
+  'frozen/box2d/BoxGame',
+  'frozen/box2d/listeners/Contact'
+], function(initInput, handleInput, update, draw, loadLevel, UI, has, Box, BoxGame, Contact){
 
   'use strict';
 
@@ -1967,39 +1967,54 @@ define([
     return !!global.localStorage.getItem('debug');
   });
 
+  var box = new Box({
+    gravityX: 0,
+    gravityY: 0,
+    contactListener: new Contact({
+      beginContact: function(idA, idB, contact){
+        if(idA !== 'ball' && idB !== 'ball'){
+          return;
+        }
+        var id = idA !== 'ball' ? idA : idB;
+        if(game.entities[id].sensor){
+          game.entities.ball.touching[id] = true;
+        }
+      },
+      endContact: function(idA, idB, contact){
+        if(idA !== 'ball' && idB !== 'ball'){
+          return;
+        }
+        var id = idA !== 'ball' ? idA : idB;
+        if(game.entities[id].sensor){
+          game.entities.ball.touching[id] = false;
+        }
+      }
+    })
+  });
+
   //setup a GameCore instance
   var game = new BoxGame({
     canvasId: 'canvas',
     gameAreaId: 'gameArea',
     canvasPercentage: 0.95,
-    box: new Box({
-      gravityY: 0,
-      gravityX: 0,
-      resolveCollisions: true
-    }),
+    box: box,
     initInput: initInput,
     handleInput: handleInput,
     update: update,
     draw: draw,
     loadLevel: loadLevel,
-    ui: new UI()
+    ui: new UI(),
+    level: 0
   });
 
   //if you want to take a look at the game object in dev tools
   console.log(game);
 
-  game.loadLevel(state.level);
+  game.loadLevel(game.level);
 
   //launch the game!
   game.run();
 
-});
-},
-'game/state':function(){
-define({
-  level: 0,
-  swingPt: null,
-  goal: null
 });
 },
 'game/initInput':function(){
@@ -2842,19 +2857,16 @@ define(["./has"], function(has){
 },
 'game/handleInput':function(){
 define([
-  './state',
   'dojo/has',
   'dojo/keys',
   'frozen/utils/distance',
   'frozen/utils/scalePoints',
   'frozen/utils/radiansFromCenter'
-], function(state, has, keys, distance, scalePoints, radiansFromCenter){
+], function(has, keys, distance, scalePoints, radiansFromCenter){
 
   'use strict';
 
   var IMPULSE_PER_PIXEL = 0.1;
-
-  // TODO: DRY up
   var MAX_IMPULSE_PIXELS = 100;
 
   return function(im){
@@ -2862,37 +2874,29 @@ define([
 
     if( 0 ){
       if(im.keyActions[keys.RIGHT_ARROW].getAmount()){
-        state.level++;
-        this.loadLevel(state.level);
+        this.level++;
+        this.loadLevel(this.level);
       }
 
       if(im.keyActions[keys.LEFT_ARROW].getAmount()){
-        state.level--;
-        this.loadLevel(state.level);
+        this.level--;
+        this.loadLevel(this.level);
       }
     }
 
     if(ball && (this.ui.scoreTime <= 0)){
       var position = im.mouseAction.position;
-      var ballPx;
-      var dist;
-      if(position){
-        ballPx = scalePoints(ball, ball.scale);
-        dist = distance(ballPx, position);
-      }
-
-      if(im.mouseAction.isPressed()){
-        state.swingPt = position;
-      } else {
-        if(state.swingPt){
-          // Hit Ball
-          this.ui.ballHit = true;
-          var angle = radiansFromCenter(ballPx, position) + Math.PI;
-          var impulse = Math.min(dist * IMPULSE_PER_PIXEL, MAX_IMPULSE_PIXELS * IMPULSE_PER_PIXEL);
-          console.log('hit', angle, impulse);
-          this.box.applyImpulse(ball.id, angle, impulse);
-          state.swingPt = null;
-        }
+      if(!im.mouseAction.isPressed() && position){
+        var ballPx = scalePoints(ball, ball.scale);
+        var dist = distance(ballPx, position);
+        // Hit Ball
+        this.ui.ballHit = true;
+        var angle = radiansFromCenter(ballPx, position) + Math.PI;
+        var impulse = Math.min(dist * IMPULSE_PER_PIXEL, MAX_IMPULSE_PIXELS * IMPULSE_PER_PIXEL);
+        console.log('hit', angle, impulse);
+        this.box.applyImpulse(ball.id, angle, impulse);
+        // Reset mouse position
+        im.mouseAction.position = null;
       }
     }
   };
@@ -8551,26 +8555,28 @@ define(function(){
 },
 'game/update':function(){
 define([
-  './state',
   './levelData',
   'lodash',
-  'frozen/utils/distance',
+  'frozen/utils/radiansFromCenter',
   'frozen/plugins/loadSound!sounds/clack',
   'frozen/plugins/loadSound!sounds/hole',
   'frozen/plugins/loadSound!sounds/laugh'
-], function(state, levelData, _, distance, clack, holeSound, laughSound){
+], function(levelData, _, radiansFromCenter, clack, holeSound, laughSound){
 
   'use strict';
 
   var SOUND_IMPULSE_THRESHOLD = 1;
   var SOUND_IMPULSE_MAX = 50;
   var MAX_DISTANCE_FOR_GOAL = 0.4;
+  var ZONE_IMPULSE = 0.2;
 
   return function(millis){
-    var ball = this.entities.ball;
+    var entities = this.entities;
+    var ball = entities.ball;
     var ui = this.ui;
-    var goal = state.goal;
+    var goal = entities.goal;
     var box = this.box;
+    var level = levelData[this.level];
 
     if(ball && (this.ui.scoreTime <= 0)){
       if(ball.collisions && ball.collisions.length > 0){
@@ -8582,11 +8588,10 @@ define([
         });
       }
 
-      var dist = distance(ball, goal);
-      if(dist < MAX_DISTANCE_FOR_GOAL){
+      if(ball.touching.goal){
         var velocity = Math.sqrt(ball.linearVelocity.x * ball.linearVelocity.x + ball.linearVelocity.y * ball.linearVelocity.y);
-        console.log('goal', dist, velocity);
-        if(velocity < levelData[state.level].maxGoalVelocity){
+        console.log('goal', velocity);
+        if(velocity < level.maxGoalVelocity){
 
           ui.setTime('scoreTime');
           ui.totalScore += this.ui.strokes - 3;
@@ -8598,13 +8603,29 @@ define([
           box.setLinearVelocity(ball.id, 0, 0);
           box.setAngularVelocity(ball.id, 0);
         } else {
-          console.log('too hard', dist, velocity);
+          console.log('too hard', velocity);
           ui.setTime('messageTime');
         }
       } else {
-        _.forEach(levelData[state.level].zones, function(zone){
-          if(ball && zone.pointInShape(ball)){
-            zone.applyImpulse(ball, box);
+        _.forEach(ball.touching, function(touched, id){
+          if(!touched){
+            return;
+          }
+          var entity = entities[id];
+          if(entity.water){
+            var start = _.find(level.entities, { id: 'ball' });
+            box.setPosition(ball.id, start.x / box.scale, start.y / box.scale);
+            box.setLinearVelocity(ball.id, 0, 0);
+            box.setAngularVelocity(ball.id, 0);
+            ui.setTime('waterTime');
+          } else if(entity.type === 'Rectangle' || entity.type === 'Polygon'){
+            box.applyImpulseDegrees(ball.id, entity.impulseAngle, ZONE_IMPULSE * entity.impulsePercentage);
+          } else {
+            if(entity.impulseInward){
+              box.applyImpulse(ball.id, radiansFromCenter(entity, ball) + Math.PI, ZONE_IMPULSE * entity.impulsePercentage);
+            } else {
+              box.applyImpulse(ball.id, radiansFromCenter(entity, ball), ZONE_IMPULSE * entity.impulsePercentage);
+            }
           }
         });
       }
@@ -8613,19 +8634,35 @@ define([
     ui.update(millis);
 
     if(ui.changeLevel){
-      state.level++;
-      this.loadLevel(state.level);
+      this.level++;
+      this.loadLevel(this.level);
     }
   };
 
 });
 },
 'game/levelData':function(){
-define(function(){
+define([
+  'lodash',
+  'frozen/plugins/loadImage!images/hole1.png',
+  'frozen/plugins/loadImage!images/hole2.png',
+  'frozen/plugins/loadImage!images/hole3.png',
+  'frozen/plugins/loadImage!images/hole4.png',
+  'frozen/plugins/loadImage!images/hole5.png',
+  'frozen/plugins/loadImage!images/hole6.png',
+  'frozen/plugins/loadImage!images/hole7.png',
+  'frozen/plugins/loadImage!images/hole8.png',
+  'frozen/plugins/loadImage!images/hole9.png',
+  'frozen/plugins/loadImage!images/hole10.png',
+  'frozen/plugins/loadImage!images/hole11.png',
+  'frozen/plugins/loadImage!images/hole12.png'
+], function(_, hole1, hole2, hole3, hole4, hole5, hole6, hole7, hole8, hole9, hole10, hole11, hole12){
 
   'use strict';
 
-  return [
+  var MAX_VELOCITY_FOR_GOAL = 8;
+
+  var levels = [
     // Level 1
     {
       "entities": [
@@ -8668,26 +8705,23 @@ define(function(){
         {
           "x": 89,
           "y": 147,
-          "radius": 3.605551275463989,
+          "radius": 8,
+          "linearDamping": 0.5,
+          "angularDamping": 0.4,
           "staticBody": false,
           "type": "Circle",
-          "zone": true,
-          "color": "rgba(255,0,0,0.2)",
-          "start": true,
-          "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 4
+          "id": "ball",
+          "fillStyle": "rgba(0,255,0,0.4)"
         },
         {
           "x": 605.5,
           "y": 285.5,
-          "radius": 10.770329614269007,
-          "staticBody": false,
+          "radius": 6.77,
+          "staticBody": true,
           "type": "Circle",
-          "zone": true,
-          "color": "rgba(255,255,0,0.2)",
-          "goal": true,
+          "sensor": true,
           "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 5
+          "id": "goal"
         }
       ],
       "joints": [],
@@ -8790,23 +8824,21 @@ define(function(){
         {
           "x": 76,
           "y": 110,
-          "radius": 4.242640687119285,
+          "radius": 8,
+          "linearDamping": 0.5,
+          "angularDamping": 0.4,
           "staticBody": false,
           "type": "Circle",
-          "zone": true,
-          "start": true,
-          "id": 7,
-          "fillStyle": "rgba(255,0,0,0.2)"
+          "id": "ball"
         },
         {
           "x": 76,
           "y": 320,
-          "radius": 11.661903789690601,
-          "staticBody": false,
+          "radius": 6.77,
+          "staticBody": true,
           "type": "Circle",
-          "zone": true,
-          "goal": true,
-          "id": 8,
+          "sensor": true,
+          "id": "goal",
           "fillStyle": "rgba(255,0,0,0.2)"
         }
       ],
@@ -8875,25 +8907,23 @@ define(function(){
         {
           "x": 101,
           "y": 228.5,
-          "radius": 4.47213595499958,
+          "radius": 8,
+          "linearDamping": 0.5,
+          "angularDamping": 0.4,
           "staticBody": false,
           "type": "Circle",
-          "zone": true,
-          "color": "rgba(255,0,0,0.2)",
-          "start": true,
-          "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 6
+          "id": "ball",
+          "fillStyle": "rgba(0,255,0,0.4)"
         },
         {
           "x": 590.5,
           "y": 231.5,
-          "radius": 11.40175425099138,
-          "staticBody": false,
+          "radius": 6.77,
+          "staticBody": true,
           "type": "Circle",
-          "zone": true,
-          "goal": true,
+          "sensor": true,
           "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 7
+          "id": "goal"
         }
       ],
       "joints": [],
@@ -8945,38 +8975,37 @@ define(function(){
         {
           "x": 573,
           "y": 333,
-          "radius": 7.0710678118654755,
-          "staticBody": true,
+          "radius": 8,
+          "linearDamping": 0.5,
+          "angularDamping": 0.4,
+          "staticBody": false,
           "type": "Circle",
-          "zone": true,
-          "start": true,
-          "color": "rgba(255,0,0,0.2)",
-          "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 4
+          "id": "ball",
+          "fillStyle": "rgba(0,255,0,0.4)"
         },
         {
           "x": 114.5,
           "y": 119.5,
-          "radius": 11.313708498984761,
-          "staticBody": false,
+          "radius": 6.77,
+          "staticBody": true,
           "type": "Circle",
-          "zone": true,
-          "goal": true,
-          "color": "rgba(255,0,0,0.2)",
+          "sensor": true,
           "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 5
+          "id": "goal"
         },
         {
           "x": 275,
           "y": 220,
           "halfWidth": 140,
           "halfHeight": 174,
-          "staticBody": false,
+          "staticBody": true,
           "type": "Rectangle",
-          "zone": true,
+          "sensor": true,
           "impulseAngle": 90,
+          "impulsePercentage": 1,
+          "hill": true,
           "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 6
+          "id": 4
         }
       ],
       "joints": [],
@@ -9070,25 +9099,23 @@ define(function(){
         {
           "x": 186.5,
           "y": 229.5,
-          "radius": 8.602325267042627,
+          "radius": 8,
+          "linearDamping": 0.5,
+          "angularDamping": 0.4,
           "staticBody": false,
           "type": "Circle",
-          "zone": true,
-          "start": true,
-          "color": "rgba(255,0,0,0.2)",
-          "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 6
+          "id": "ball",
+          "fillStyle": "rgba(0,255,0,0.4)"
         },
         {
           "x": 76,
           "y": 227.5,
-          "radius": 15,
-          "staticBody": false,
+          "radius": 6.77,
+          "staticBody": true,
           "type": "Circle",
-          "goal": true,
-          "zone": true,
+          "sensor": true,
           "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 7
+          "id": "goal"
         }
       ],
       "joints": [],
@@ -9158,37 +9185,32 @@ define(function(){
         {
           "x": 151.5,
           "y": 374.5,
-          "radius": 8.54400374531753,
+          "radius": 8,
           "staticBody": false,
           "type": "Circle",
-          "zone": true,
-          "start": true,
-          "color": "rgba(255,0,0,0.1)",
-          "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 6
+          "id": "ball",
+          "fillStyle": "rgba(0,255,0,0.4)"
         },
         {
           "x": 617,
           "y": 224.5,
-          "radius": 14.7648230602334,
-          "staticBody": false,
+          "radius": 6.77,
+          "staticBody": true,
           "type": "Circle",
-          "zone": true,
-          "goal": true,
-          "color": "rgba(255,0,0,0.2)",
+          "sensor": true,
           "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 7
+          "id": "goal"
         },
         {
           "x": 155,
           "y": 300.5,
           "halfWidth": 110,
           "halfHeight": 52.5,
-          "staticBody": false,
+          "staticBody": true,
           "type": "Rectangle",
-          "zone": true,
+          "sensor": true,
+          "impulsePercentage": 1,
           "impulseAngle": 180,
-          "color": "rgba(255,0,0,0.2)",
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 8
         },
@@ -9197,9 +9219,10 @@ define(function(){
           "y": 145,
           "halfWidth": 110.5,
           "halfHeight": 59,
-          "staticBody": false,
+          "staticBody": true,
           "type": "Rectangle",
-          "zone": true,
+          "sensor": true,
+          "impulsePercentage": 1,
           "impulseAngle": 0,
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 9
@@ -9521,22 +9544,18 @@ define(function(){
           "radius": 8,
           "staticBody": false,
           "type": "Circle",
-          "zone": true,
-          "start": true,
-          "color": "rgba(255,0,0,0.2)",
-          "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 12
+          "id": "ball",
+          "fillStyle": "rgba(0,255,0,0.4)"
         },
         {
           "x": 448,
           "y": 193,
-          "radius": 15,
-          "staticBody": false,
+          "radius": 6.77,
+          "staticBody": true,
           "type": "Circle",
-          "zone": true,
-          "goal": true,
+          "sensor": true,
           "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 13
+          "id": "goal"
         }
       ],
       "joints": [],
@@ -9627,24 +9646,21 @@ define(function(){
         {
           "x": 69.5,
           "y": 199.5,
-          "radius": 7,
-          "staticBody": true,
+          "radius": 8,
+          "staticBody": false,
           "type": "Circle",
-          "start": true,
-          "zone": true,
-          "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 7
+          "id": "ball",
+          "fillStyle": "rgba(0,255,0,0.4)"
         },
         {
           "x": 637,
           "y": 57.5,
-          "radius": 15,
+          "radius": 6.77,
           "staticBody": true,
           "type": "Circle",
-          "goal": true,
-          "zone": true,
+          "sensor": true,
           "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 8
+          "id": "goal"
         }
       ],
       "joints": [],
@@ -9699,32 +9715,29 @@ define(function(){
           "radius": 8,
           "staticBody": false,
           "type": "Circle",
-          "zone": true,
-          "color": "rgba(255,0,0,0.2)",
-          "start": true,
-          "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 4
+          "id": "ball",
+          "fillStyle": "rgba(0,255,0,0.4)"
         },
         {
           "x": 436.5,
           "y": 227.5,
           "radius": 50,
-          "staticBody": false,
+          "staticBody": true,
           "type": "Circle",
-          "zone": true,
+          "sensor": true,
           "impulseInward": true,
-          "impulsePercentage": 3,
+          "impulsePercentage": 2,
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 5
         },
         {
           "x": 436.5,
           "y": 227.5,
-          "radius": 159,
-          "staticBody": false,
+          "radius": 145,
+          "staticBody": true,
           "type": "Circle",
-          "zone": true,
-          "impulsePercentage": 2,
+          "sensor": true,
+          "impulsePercentage": 1,
           "impulseInward": false,
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 6
@@ -9732,13 +9745,24 @@ define(function(){
         {
           "x": 436.5,
           "y": 227.5,
-          "radius": 10,
-          "staticBody": false,
+          "radius": 159,
+          "staticBody": true,
           "type": "Circle",
-          "zone": true,
-          "goal": true,
+          "sensor": true,
+          "impulsePercentage": 0.2,
+          "impulseInward": false,
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 7
+        },
+        {
+          "x": 436.5,
+          "y": 227.5,
+          "radius": 6.77,
+          "staticBody": true,
+          "type": "Circle",
+          "sensor": true,
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": "goal"
         }
       ],
       "joints": [],
@@ -9746,27 +9770,965 @@ define(function(){
         "height": 440,
         "width": 700
       },
-      "backImg": null,
-      "maxGoalVelocity": 11.5
+      "backImg": null
+    },
+    //level 10
+    {
+      "entities": [
+        {
+          "points": [
+            {
+              "x": -107.75,
+              "y": -138.5
+            },
+            {
+              "x": 109.25,
+              "y": -0.5
+            },
+            {
+              "x": 107.25,
+              "y": 1.5
+            },
+            {
+              "x": -108.75,
+              "y": 137.5
+            }
+          ],
+          "x": 199.75,
+          "y": 222.5,
+          "staticBody": true,
+          "type": "Polygon",
+          "id": 0
+        },
+        {
+          "points": [
+            {
+              "x": -2.75,
+              "y": -57.75
+            },
+            {
+              "x": 68.25,
+              "y": 15.25
+            },
+            {
+              "x": -7.75,
+              "y": 57.25
+            },
+            {
+              "x": -57.75,
+              "y": -14.75
+            }
+          ],
+          "x": 135.75,
+          "y": 374.75,
+          "staticBody": true,
+          "type": "Polygon",
+          "id": 3
+        },
+        {
+          "points": [
+            {
+              "x": -1,
+              "y": -55.25
+            },
+            {
+              "x": 69,
+              "y": -15.25
+            },
+            {
+              "x": -5,
+              "y": 62.75
+            },
+            {
+              "x": -63,
+              "y": 7.75
+            }
+          ],
+          "x": 139,
+          "y": 65.25,
+          "staticBody": true,
+          "type": "Polygon",
+          "id": 4
+        },
+        {
+          "points": [
+            {
+              "x": 194.5,
+              "y": -77.5
+            },
+            {
+              "x": 2.5,
+              "y": 80.5
+            },
+            {
+              "x": 0.5,
+              "y": 81.5
+            },
+            {
+              "x": -197.5,
+              "y": -84.5
+            }
+          ],
+          "x": 340.5,
+          "y": 111.5,
+          "staticBody": true,
+          "type": "Polygon",
+          "id": 5
+        },
+        {
+          "points": [
+            {
+              "x": 7.2000000000000455,
+              "y": -61.8
+            },
+            {
+              "x": 60.200000000000045,
+              "y": 6.200000000000003
+            },
+            {
+              "x": 2.2000000000000455,
+              "y": 42.2
+            },
+            {
+              "x": 0.20000000000004547,
+              "y": 42.2
+            },
+            {
+              "x": -69.79999999999995,
+              "y": -28.799999999999997
+            }
+          ],
+          "x": 546.8,
+          "y": 77.8,
+          "staticBody": true,
+          "type": "Polygon",
+          "id": 6
+        },
+        {
+          "points": [
+            {
+              "x": -97.5,
+              "y": 1.75
+            },
+            {
+              "x": 106.5,
+              "y": -127.25
+            },
+            {
+              "x": 88.5,
+              "y": 122.75
+            },
+            {
+              "x": -97.5,
+              "y": 2.75
+            }
+          ],
+          "x": 472.5,
+          "y": 219.25,
+          "staticBody": true,
+          "type": "Polygon",
+          "id": 7
+        },
+        {
+          "points": [
+            {
+              "x": 14.75,
+              "y": -47.25
+            },
+            {
+              "x": 47.75,
+              "y": -12.25
+            },
+            {
+              "x": -11.25,
+              "y": 40.75
+            },
+            {
+              "x": -51.25,
+              "y": 18.75
+            }
+          ],
+          "x": 534.25,
+          "y": 368.25,
+          "staticBody": true,
+          "type": "Polygon",
+          "id": 8
+        },
+        {
+          "points": [
+            {
+              "x": 2.3333333333333144,
+              "y": -91
+            },
+            {
+              "x": 164.33333333333331,
+              "y": 42
+            },
+            {
+              "x": -166.66666666666669,
+              "y": 49
+            }
+          ],
+          "x": 339.6666666666667,
+          "y": 343,
+          "staticBody": true,
+          "type": "Polygon",
+          "id": 9
+        },
+        {
+          "x": 175,
+          "y": 113,
+          "radius": 8,
+          "staticBody": false,
+          "type": "Circle",
+          "id": "ball",
+          "fillStyle": "rgba(0,255,0,0.4)"
+        },
+        {
+          "x": 181,
+          "y": 330.5,
+          "radius": 6.77,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": "goal"
+        }
+      ],
+      "joints": [],
+      "canvas": {
+        "height": 440,
+        "width": 700
+      },
+      "backImg": null
+    },
+    //level 11
+    {
+      "entities": [
+        {
+          "x": 272,
+          "y": 180,
+          "halfWidth": 259,
+          "halfHeight": 27,
+          "staticBody": true,
+          "type": "Rectangle",
+          "id": 0
+        },
+        {
+          "x": 27,
+          "y": 129.5,
+          "halfWidth": 24,
+          "halfHeight": 127.5,
+          "staticBody": true,
+          "type": "Rectangle",
+          "id": 1
+        },
+        {
+          "x": 348.5,
+          "y": 26,
+          "halfWidth": 344.5,
+          "halfHeight": 26,
+          "staticBody": true,
+          "type": "Rectangle",
+          "id": 2
+        },
+        {
+          "x": 675,
+          "y": 214.5,
+          "halfWidth": 23,
+          "halfHeight": 211.5,
+          "staticBody": true,
+          "type": "Rectangle",
+          "id": 3
+        },
+        {
+          "x": 592.5,
+          "y": 414,
+          "halfWidth": 101.5,
+          "halfHeight": 22,
+          "staticBody": true,
+          "type": "Rectangle",
+          "id": 4
+        },
+        {
+          "x": 524.5,
+          "y": 288,
+          "halfWidth": 25.5,
+          "halfHeight": 114,
+          "staticBody": true,
+          "type": "Rectangle",
+          "id": 5
+        },
+        {
+          "points": [
+            {
+              "x": 12.666666666666629,
+              "y": -17.333333333333336
+            },
+            {
+              "x": 8.666666666666629,
+              "y": 22.666666666666664
+            },
+            {
+              "x": -21.33333333333337,
+              "y": -5.333333333333336
+            }
+          ],
+          "x": 647.3333333333334,
+          "y": 53.333333333333336,
+          "staticBody": true,
+          "type": "Polygon",
+          "id": 6
+        },
+        {
+          "points": [
+            {
+              "x": -1.5,
+              "y": -17.25
+            },
+            {
+              "x": 17.5,
+              "y": 2.75
+            },
+            {
+              "x": 2.5,
+              "y": 18.75
+            },
+            {
+              "x": -18.5,
+              "y": -4.25
+            }
+          ],
+          "x": 532.5,
+          "y": 169.25,
+          "staticBody": true,
+          "type": "Polygon",
+          "id": 7
+        },
+        {
+          "x": 591,
+          "y": 112,
+          "radius": 6,
+          "staticBody": true,
+          "type": "Circle",
+          "id": "pin"
+        },
+        {
+          "x": 591,
+          "y": 112,
+          "halfWidth": 55,
+          "halfHeight": 8,
+          "staticBody": false,
+          "type": "Rectangle",
+          "fillStyle": "#855E42",
+          "strokeStyle": "#855E42",
+          "id": "bar"
+        },
+        {
+          "x": 90.5,
+          "y": 104.5,
+          "radius": 8,
+          "staticBody": false,
+          "type": "Circle",
+          "id": "ball",
+          "fillStyle": "rgba(0,255,0,0.4)"
+        },
+        {
+          "x": 601,
+          "y": 363,
+          "radius": 6.77,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": "goal"
+        }
+      ],
+      "joints": [
+        {
+          "bodyId1": "pin",
+          "bodyId2": "bar",
+          "type": "Revolute",
+          "id": "hj",
+          "jointAttributes": {
+            "motorSpeed": -4,
+            "enableMotor": true,
+            "maxMotorTorque": 3500
+          }
+        }
+      ],
+      "canvas": {
+        "height": 440,
+        "width": 700
+      },
+      "backImg": null
+    },
+    //Level 12
+    {
+      "entities": [
+        {
+          "points": [
+            {
+              "x": -102,
+              "y": -15.5
+            },
+            {
+              "x": 112,
+              "y": -17.5
+            },
+            {
+              "x": 128,
+              "y": 15.5
+            },
+            {
+              "x": -138,
+              "y": 17.5
+            }
+          ],
+          "x": 255,
+          "y": 412.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 0
+        },
+        {
+          "points": [
+            {
+              "x": 29,
+              "y": -44.5
+            },
+            {
+              "x": 58,
+              "y": -6.5
+            },
+            {
+              "x": -40,
+              "y": 41.5
+            },
+            {
+              "x": -47,
+              "y": 9.5
+            }
+          ],
+          "x": 413,
+          "y": 383.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 1
+        },
+        {
+          "points": [
+            {
+              "x": -58.80000000000001,
+              "y": -9
+            },
+            {
+              "x": 75.19999999999999,
+              "y": -28
+            },
+            {
+              "x": 90.19999999999999,
+              "y": 7
+            },
+            {
+              "x": -46.80000000000001,
+              "y": 38
+            },
+            {
+              "x": -59.80000000000001,
+              "y": -8
+            }
+          ],
+          "x": 501.8,
+          "y": 346,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 2
+        },
+        {
+          "points": [
+            {
+              "x": -21.5,
+              "y": -46.25
+            },
+            {
+              "x": 61.5,
+              "y": 25.75
+            },
+            {
+              "x": 33.5,
+              "y": 62.75
+            },
+            {
+              "x": -73.5,
+              "y": -42.25
+            }
+          ],
+          "x": 90.5,
+          "y": 370.25,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 3
+        },
+        {
+          "points": [
+            {
+              "x": -28.799999999999997,
+              "y": -161.2
+            },
+            {
+              "x": 16.200000000000003,
+              "y": -113.19999999999999
+            },
+            {
+              "x": 21.200000000000003,
+              "y": 82.80000000000001
+            },
+            {
+              "x": 21.200000000000003,
+              "y": 84.80000000000001
+            },
+            {
+              "x": -29.799999999999997,
+              "y": 106.80000000000001
+            }
+          ],
+          "x": 48.8,
+          "y": 239.2,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 4
+        },
+        {
+          "points": [
+            {
+              "x": 56.5,
+              "y": -59.5
+            },
+            {
+              "x": 54.5,
+              "y": -21.5
+            },
+            {
+              "x": -31.5,
+              "y": 57.5
+            },
+            {
+              "x": -79.5,
+              "y": 23.5
+            }
+          ],
+          "x": 96.5,
+          "y": 67.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 5
+        },
+        {
+          "points": [
+            {
+              "x": 122.5,
+              "y": -19.25
+            },
+            {
+              "x": 89.5,
+              "y": 15.75
+            },
+            {
+              "x": -94.5,
+              "y": 19.75
+            },
+            {
+              "x": -117.5,
+              "y": -16.25
+            }
+          ],
+          "x": 245.5,
+          "y": 26.25,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 6
+        },
+        {
+          "points": [
+            {
+              "x": -43,
+              "y": -55.5
+            },
+            {
+              "x": 69,
+              "y": 19.5
+            },
+            {
+              "x": 25,
+              "y": 49.5
+            },
+            {
+              "x": -51,
+              "y": -13.5
+            }
+          ],
+          "x": 387,
+          "y": 55.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 7
+        },
+        {
+          "points": [
+            {
+              "x": 111,
+              "y": -13.5
+            },
+            {
+              "x": 76,
+              "y": 29.5
+            },
+            {
+              "x": -91,
+              "y": 21.5
+            },
+            {
+              "x": -96,
+              "y": -37.5
+            }
+          ],
+          "x": 503,
+          "y": 84.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 8
+        },
+        {
+          "points": [
+            {
+              "x": 5.25,
+              "y": -43.25
+            },
+            {
+              "x": 20.25,
+              "y": 35.75
+            },
+            {
+              "x": -9.75,
+              "y": 16.75
+            },
+            {
+              "x": -15.75,
+              "y": -9.25
+            }
+          ],
+          "x": 592.75,
+          "y": 119.25,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 9
+        },
+        {
+          "points": [
+            {
+              "x": 23.5,
+              "y": -31.75
+            },
+            {
+              "x": 26.5,
+              "y": 34.25
+            },
+            {
+              "x": -24.5,
+              "y": 25.25
+            },
+            {
+              "x": -25.5,
+              "y": -27.75
+            }
+          ],
+          "x": 571.5,
+          "y": 166.75,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 10
+        },
+        {
+          "points": [
+            {
+              "x": -12.200000000000045,
+              "y": -9.800000000000011
+            },
+            {
+              "x": 13.799999999999955,
+              "y": -16.80000000000001
+            },
+            {
+              "x": 17.799999999999955,
+              "y": 14.199999999999989
+            },
+            {
+              "x": -7.2000000000000455,
+              "y": 19.19999999999999
+            },
+            {
+              "x": -12.200000000000045,
+              "y": -6.800000000000011
+            }
+          ],
+          "x": 593.2,
+          "y": 201.8,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 11
+        },
+        {
+          "points": [
+            {
+              "x": 22.25,
+              "y": -31.5
+            },
+            {
+              "x": 24.25,
+              "y": 31.5
+            },
+            {
+              "x": -21.75,
+              "y": 19.5
+            },
+            {
+              "x": -24.75,
+              "y": -19.5
+            }
+          ],
+          "x": 571.75,
+          "y": 238.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 12
+        },
+        {
+          "points": [
+            {
+              "x": -4,
+              "y": -16.75
+            },
+            {
+              "x": 18,
+              "y": -10.75
+            },
+            {
+              "x": 5,
+              "y": 19.25
+            },
+            {
+              "x": -19,
+              "y": 8.25
+            }
+          ],
+          "x": 590,
+          "y": 274.75,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 13
+        },
+        {
+          "points": [
+            {
+              "x": -26.75,
+              "y": -16
+            },
+            {
+              "x": 27.25,
+              "y": -17
+            },
+            {
+              "x": 27.25,
+              "y": 20
+            },
+            {
+              "x": -27.75,
+              "y": 13
+            }
+          ],
+          "x": 578.75,
+          "y": 293,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 14
+        },
+        {
+          "points": [
+            {
+              "x": -2,
+              "y": -13.5
+            },
+            {
+              "x": 26,
+              "y": -17.5
+            },
+            {
+              "x": -9,
+              "y": 31.5
+            },
+            {
+              "x": -15,
+              "y": -0.5
+            }
+          ],
+          "x": 589,
+          "y": 320.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 15
+        },
+        {
+          "x": 225,
+          "y": 145,
+          "radius": 41,
+          "staticBody": true,
+          "sensor": true,
+          "water": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 16
+        },
+        {
+          "x": 221,
+          "y": 286.5,
+          "radius": 40,
+          "staticBody": true,
+          "sensor": true,
+          "water": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 17
+        },
+        {
+          "points": [
+            {
+              "x": -20.5,
+              "y": 4.25
+            },
+            {
+              "x": 29.5,
+              "y": -16.75
+            },
+            {
+              "x": 11.5,
+              "y": 6.25
+            },
+            {
+              "x": -20.5,
+              "y": 6.25
+            }
+          ],
+          "x": 341.5,
+          "y": 221.75,
+          "staticBody": true,
+          "sensor": true,
+          "water": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 18
+        },
+        {
+          "points": [
+            {
+              "x": -23.80000000000001,
+              "y": -10.199999999999989
+            },
+            {
+              "x": 7.199999999999989,
+              "y": -12.199999999999989
+            },
+            {
+              "x": 24.19999999999999,
+              "y": 8.800000000000011
+            },
+            {
+              "x": 16.19999999999999,
+              "y": 22.80000000000001
+            },
+            {
+              "x": -23.80000000000001,
+              "y": -9.199999999999989
+            }
+          ],
+          "x": 343.8,
+          "y": 236.2,
+          "staticBody": true,
+          "sensor": true,
+          "water": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 19
+        },
+        {
+          "x": 114,
+          "y": 214,
+          "radius": 6.77,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": "goal"
+        },
+        {
+          "x": 551.5,
+          "y": 204,
+          "radius": 6.708203932499369,
+          "staticBody": false,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": "ball"
+        }
+      ],
+      "joints": [],
+      "canvas": {
+        "height": 440,
+        "width": 700
+      },
+      "backImg": null
     }
   ];
 
+  var args = Array.prototype.slice.call(arguments, 1);
+
+  _.forEach(levels, function(level, id){
+    level.backImg = args[id];
+    level.maxGoalVelocity = level.maxGoalVelocity || MAX_VELOCITY_FOR_GOAL;
+  });
+
+  return levels;
+
 });
 },
-'frozen/plugins/loadSound':function(){
+'frozen/plugins/loadImage':function(){
 /**
- * AMD Plugin for loading Sounds
- * @module plugins/loadSound
+ * AMD Plugin for loading Images
+ * @module plugins/loadImage
  * @example
  * define([
- *   'frozen/plugins/loadSound!someSound.wav'
- * ], function(someSound){
+ *   'frozen/plugins/loadImage!someImage.png'
+ * ], function(someImage){
  *
- *   // Use someSound
+ *   // Use someImage
  *
  * });
  */
-
 
 define([
   '../ResourceManager',
@@ -9780,7 +10742,7 @@ define([
   return {
     load: function(resource, req, callback, config){
       resource = parseString(resource);
-      var res = rm.loadSound(resource);
+      var res = rm.loadImage(resource);
       callback(res);
     }
   };
@@ -11480,19 +12442,50 @@ define(function(){
 
 });
 },
+'frozen/plugins/loadSound':function(){
+/**
+ * AMD Plugin for loading Sounds
+ * @module plugins/loadSound
+ * @example
+ * define([
+ *   'frozen/plugins/loadSound!someSound.wav'
+ * ], function(someSound){
+ *
+ *   // Use someSound
+ *
+ * });
+ */
+
+
+define([
+  '../ResourceManager',
+  '../utils/parseString'
+], function(ResourceManager, parseString){
+
+  'use strict';
+
+  var rm = new ResourceManager();
+
+  return {
+    load: function(resource, req, callback, config){
+      resource = parseString(resource);
+      var res = rm.loadSound(resource);
+      callback(res);
+    }
+  };
+});
+},
 'game/draw':function(){
 define([
-  './state',
   './levelData',
   './rotateVector',
-  './getHoleScoreName',
   'lodash',
   'dojo/has',
   'frozen/utils/distance',
   'frozen/utils/scalePoints',
   'frozen/utils/translatePoints',
   'frozen/utils/radiansFromCenter'
-], function(state, levelData, rotateVector, getHoleScoreName, _, has, distance, scalePoints, translatePoints, radiansFromCenter){
+], function(levelData, rotateVector, _, has, distance, scalePoints, translatePoints, radiansFromCenter){
 
   'use strict';
 
@@ -11504,21 +12497,22 @@ define([
 
   return function(context){
     var ball = this.entities.ball;
+    var im = this.inputManager;
 
     context.lineWidth = 1;
-    context.drawImage(levelData[state.level].backImg, 0, 0, this.width, this.height);
+    context.drawImage(levelData[this.level].backImg, 0, 0, this.width, this.height);
     ball.draw(context);
 
-    if( 0 ){
-      _.forEach(this.entities, function(entity){
+    _.forEach(this.entities, function(entity){
+      if(!entity.staticBody ||  0 ){
         entity.draw(context);
-      });
-    }
+      }
+    });
 
-    if(state.swingPt){
+    if(im.mouseAction.position){
       var ballPt = scalePoints(ball, ball.scale);
-      var impPerc = (Math.min(distance(ballPt, state.swingPt), MAX_IMPULSE_PIXELS)) / MAX_IMPULSE_PIXELS;
-      var angle = radiansFromCenter(ballPt, state.swingPt) + Math.PI;
+      var impPerc = (Math.min(distance(ballPt, im.mouseAction.position), MAX_IMPULSE_PIXELS)) / MAX_IMPULSE_PIXELS;
+      var angle = radiansFromCenter(ballPt, im.mouseAction.position) + Math.PI;
       var rotated = rotateVector({x: 0, y: impPerc * MAX_IMPULSE_PIXELS }, angle);
       var p2 = translatePoints(rotated, ballPt);
       var ogLineWidth = context.lineWidth;
@@ -11536,7 +12530,7 @@ define([
       context.lineWidth = ogLineWidth;
     }
 
-    this.ui.draw(context);
+    this.ui.draw(context, this.level);
   };
 
 });
@@ -11551,39 +12545,6 @@ define(function(){
       x: vector.x * Math.cos(radians) - vector.y * Math.sin(radians),
       y: vector.x * Math.sin(radians) + vector.y * Math.cos(radians)
     };
-  };
-
-});
-},
-'game/getHoleScoreName':function(){
-define(function(){
-
-  'use strict';
-
-  return function getHoleScoreName(par, strokes){
-    if(strokes === 1){
-      return 'Hole in one!';
-    } else {
-      var diff = strokes - par;
-      if(diff === -2){
-        return 'Eagle';
-      }
-      else if(diff === -1){
-        return 'Birdy';
-      }
-      else if(diff === 0){
-        return 'Par';
-      }
-      else if(diff === 1){
-        return 'Bogey';
-      }
-      else if(diff === 2){
-        return 'Double Bogey';
-      }
-      else{
-        return '+' + diff;
-      }
-    }
   };
 
 });
@@ -11625,39 +12586,22 @@ define([
 'game/loadLevel':function(){
 define([
   './Ball',
-  './state',
   './levelData',
-  './zones',
   'lodash',
   'frozen/box2d/entities',
-  'frozen/utils/scalePoints',
-  'frozen/plugins/loadImage!{0:images/hole1.png,1:images/hole2.png,2:images/hole3.png,3:images/hole4.png,4:images/hole5.png,5:images/hole6.png,6:images/hole7.png,7:images/hole8.png,8:images/hole9.png}'
-], function(Ball, state, levelData, zones, _, entities, scalePoints, backImgs){
+  'frozen/box2d/joints',
+  'frozen/utils/scalePoints'
+], function(Ball, levelData, _, entities, joints, scalePoints){
 
   'use strict';
 
-  var MAX_VELOCITY_FOR_GOAL = 8;
-
-  _.forEach(levelData, function(level, idx){
-    level.zones = [];
-    level.backImg = backImgs[idx];
-    _.forEach(level.entities, function(obj){
-      if(obj.start){
-        level.start = {x: obj.x, y: obj.y};
-      }
-      if(obj.goal){
-        level.goal = {x: obj.x, y: obj.y};
-      }
-    });
-  });
-
   return function loadLevel(levelNum){
     if(levelNum >= levelData.length){
-      state.level = levelNum = 0;
+      this.level = levelNum = 0;
     }
 
     if(levelNum < 0){
-      state.level = levelNum = levelData.length - 1;
+      this.level = levelNum = levelData.length - 1;
     }
 
     var level = levelData[levelNum];
@@ -11665,36 +12609,27 @@ define([
 
     this.ui.reset(levelNum);
 
-    level.zones.length = 0;
-    level.maxGoalVelocity = level.maxGoalVelocity || MAX_VELOCITY_FOR_GOAL;
-
     this.removeBodies(_.toArray(this.entities));
-    // create our box2d instance
-    state.ball = new Ball({
-      x: level.start.x,
-      y: level.start.y
-    });
-    this.addBody(state.ball);
-    state.goal = scalePoints(level.goal, 1/30);
+    this.removeJoints(_.toArray(this.joints));
 
     _.forEach(level.entities, function(obj){
       console.log(obj);
-      if(!obj.zone){
+      if(obj.id === 'ball'){
+        self.addBody(new Ball(obj));
+      } else {
         var Entity = entities[obj.type];
         if(Entity){
           var ent = new Entity(obj);
-          ent.id = _.uniqueId();
           self.addBody(ent);
         }
-      } else {
-        if(!obj.goal && !obj.start){
-          var Zone = zones[obj.type];
-          if(Zone){
-            var zone = new Zone(obj);
-            zone.scaleShape(1 / self.box.scale);
-            level.zones.push(zone);
-          }
-        }
+      }
+    });
+
+    _.forEach(level.joints, function(obj){
+      var Joint = joints[obj.type];
+      if(Joint){
+        var ent = new Joint(obj);
+        self.addJoint(ent);
       }
     });
   };
@@ -11717,6 +12652,7 @@ define([
     radius: 8,
     linearDamping : 0.5,
     angularDamping : 0.4,
+    touching: {},
     draw: function(ctx){
       ctx.lineWidth = 1;
       ctx.fillStyle = '#FFF';
@@ -12003,6 +12939,13 @@ define([
      * @default
      */
     groupIndex: null,
+    /**
+     * Whether the entity is a sensor
+     * @type {Boolean}
+     * @memberOf Entity#
+     * @default
+     */
+    sensor: false,
 
     /**
      * Update this entity with the state passed in
@@ -12056,306 +12999,6 @@ define([
       this.alreadyScaled = true;
     }
 
-  });
-
-});
-},
-'frozen/plugins/loadImage':function(){
-/**
- * AMD Plugin for loading Images
- * @module plugins/loadImage
- * @example
- * define([
- *   'frozen/plugins/loadImage!someImage.png'
- * ], function(someImage){
- *
- *   // Use someImage
- *
- * });
- */
-
-define([
-  '../ResourceManager',
-  '../utils/parseString'
-], function(ResourceManager, parseString){
-
-  'use strict';
-
-  var rm = new ResourceManager();
-
-  return {
-    load: function(resource, req, callback, config){
-      resource = parseString(resource);
-      var res = rm.loadImage(resource);
-      callback(res);
-    }
-  };
-});
-},
-'game/zones':function(){
-define([
-  'dcl',
-  'frozen/box2d/entities/Polygon',
-  'frozen/box2d/entities/Rectangle',
-  'frozen/box2d/entities/Circle',
-  'frozen/utils/radiansFromCenter'
-], function(dcl, Polygon, Rectangle, Circle, radiansFromCenter){
-
-  'use strict';
-
-  var ZONE_IMPULSE = 0.2;
-
-  return {
-    Rectangle: dcl(Rectangle, {
-      impulseAngle: 0,
-      impulsePercentage: 1,
-      applyImpulse: function(entity, box){
-        box.applyImpulseDegrees(entity.id, this.impulseAngle, ZONE_IMPULSE * this.impulsePercentage);
-      }
-    }),
-    Polygon: dcl(Polygon, {
-      impulseAngle: 0,
-      impulsePercentage: 1,
-      applyImpulse: function(entity, box){
-        box.applyImpulseDegrees(entity.id, this.impulseAngle, ZONE_IMPULSE * this.impulsePercentage);
-      }
-    }),
-    Circle: dcl(Circle, {
-      impulseInward: false,
-      impulsePercentage: 1,
-      applyImpulse: function(entity, box){
-        if(this.impulseInward){
-          box.applyImpulse(entity.id, radiansFromCenter(this, entity) + Math.PI, ZONE_IMPULSE * this.impulsePercentage);
-        }else{
-          box.applyImpulse(entity.id, radiansFromCenter(this, entity), ZONE_IMPULSE * this.impulsePercentage);
-        }
-      }
-    })
-
-  };
-});
-},
-'frozen/box2d/entities/Polygon':function(){
-/**
- * This Entity represents a polygon which is build from an array of points.
- * @name Polygon
- * @constructor Polygon
- * @extends Entity
- */
-
-define([
-  'dcl',
-  './Entity',
-  '../../utils/scalePoints',
-  '../../utils/pointInPolygon',
-  '../../utils/translatePoints'
-], function(dcl, Entity, scalePoints, pointInPolygon, translatePoints){
-
-  'use strict';
-
-  return dcl(Entity, {
-    declaredClass: 'frozen/box2d/entities/Polygon',
-    /**
-     * An array of objects that have x and y values.
-     * @type {Array}
-     * @memberOf Polygon#
-     * @default
-     */
-    points: [],
-
-    /**
-     * Draws the Polygon at a given scale
-     * @function
-     * @memberOf Polygon#
-     * @param {Context} ctx The drawing context
-     * @param {Number} scale The scale at which to draw
-     */
-    draw: dcl.superCall(function(sup){
-      return function(ctx, scale){
-        scale = scale || this.scale || 1;
-        var ogLineWidth = ctx.lineWidth;
-        ctx.lineWidth = this.lineWidth;
-        ctx.save();
-        ctx.translate(this.x * scale, this.y * scale);
-        ctx.rotate(this.angle);
-        ctx.translate(-(this.x) * scale, -(this.y) * scale);
-        ctx.fillStyle = this.fillStyle;
-        ctx.strokeStyle = this.strokeStyle;
-
-        ctx.beginPath();
-        ctx.moveTo((this.x + this.points[0].x) * scale, (this.y + this.points[0].y) * scale);
-        for (var i = 1; i < this.points.length; i++) {
-           ctx.lineTo((this.points[i].x + this.x) * scale, (this.points[i].y + this.y) * scale);
-        }
-        ctx.lineTo((this.x + this.points[0].x) * scale, (this.y + this.points[0].y) * scale);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.restore();
-        ctx.lineWidth = ogLineWidth;
-        sup.apply(this, [ctx, scale]);
-      };
-    }),
-
-    /**
-     * Scale this shape
-     * @function
-     * @memberOf Polygon#
-     * @param {Number} scale The amount the shape should scale
-     */
-    scaleShape: dcl.superCall(function(sup){
-      return function(scale){
-        this.points = scalePoints(this.points, scale);
-        sup.apply(this, [scale]);
-      };
-    }),
-
-    /**
-     * Checks if a given point is contained within this Polygon.
-     * @function
-     * @memberOf Polygon#
-     * @param {Object} point An object with x and y values.
-     * @return {Boolean} True if point is in shape else false
-     */
-    pointInShape: function(point){
-      return pointInPolygon(point, translatePoints(this.points, this));
-    }
-  });
-
-});
-},
-'frozen/utils/pointInPolygon':function(){
-define(function(){
-
-  'use strict';
-
-  // Using Ray-Casting formula based on
-  // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-  // and https://github.com/substack/point-in-polygon/
-  // Re-written for most readability and for use with point objects instead of arrays
-
-  function pointInPoly(point, polygon){
-    if(!point || !polygon){
-      return false;
-    }
-
-    var poly = polygon.points || polygon;
-
-    var insidePoly = false;
-    var j = poly.length - 1;
-
-    for(var i = 0; i < poly.length; j = i++){
-      var xi = poly[i].x;
-      var yi = poly[i].y;
-      var xj = poly[j].x;
-      var yj = poly[j].y;
-
-      if(yi > point.y !== yj > point.y){
-        if(point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi){
-          insidePoly = !insidePoly;
-        }
-      }
-    }
-
-    return insidePoly;
-  }
-
-  return pointInPoly;
-});
-},
-'frozen/box2d/entities/Rectangle':function(){
-/**
- * This Entity represents a Rectangle
- * @name Rectangle
- * @constructor Rectangle
- * @extends Entity
- */
-
-define([
-  'dcl',
-  './Entity'
-], function(dcl, Entity){
-
-  'use strict';
-
-  return dcl(Entity, {
-    declaredClass: 'frozen/box2d/entities/Rectangle',
-    /**
-     * Half of the Rectangle's total width
-     * @type {Number}
-     * @memberOf Rectangle#
-     * @default
-     */
-    halfWidth: 1,
-    /**
-     * Half of the Rectangle's total width
-     * @type {Number}
-     * @memberOf Rectangle#
-     * @default
-     */
-    halfHeight: 1,
-
-    /**
-     * Draws the Rectangle at a given scale
-     * @function
-     * @memberOf Rectangle#
-     * @param {Context} ctx The drawing context
-     * @param {Number} scale The scale at which to draw
-     */
-    draw: dcl.superCall(function(sup){
-      return function(ctx, scale){
-        scale = scale || this.scale || 1;
-        var ogLineWidth = ctx.lineWidth;
-        ctx.lineWidth = this.lineWidth;
-        ctx.save();
-        ctx.translate(this.x * scale, this.y * scale);
-        ctx.rotate(this.angle);
-        ctx.translate(-(this.x) * scale, -(this.y) * scale);
-        ctx.fillStyle = this.fillStyle;
-        ctx.strokeStyle = this.strokeStyle;
-        ctx.fillRect(
-          (this.x-this.halfWidth) * scale,
-          (this.y-this.halfHeight) * scale,
-          (this.halfWidth*2) * scale,
-          (this.halfHeight*2) * scale
-        );
-        ctx.strokeRect(
-          (this.x-this.halfWidth) * scale,
-          (this.y-this.halfHeight) * scale,
-          (this.halfWidth*2) * scale,
-          (this.halfHeight*2) * scale
-        );
-        ctx.restore();
-        ctx.lineWidth = ogLineWidth;
-        sup.apply(this, [ctx, scale]);
-      };
-    }),
-
-    /**
-     * Scale this shape
-     * @function
-     * @memberOf Rectangle#
-     * @param {Number} scale The amount the shape should scale
-     */
-    scaleShape: dcl.superCall(function(sup){
-      return function(scale){
-        this.halfHeight = this.halfHeight * scale;
-        this.halfWidth = this.halfWidth * scale;
-        sup.apply(this, [scale]);
-      };
-    }),
-
-    /**
-     * Checks if a given point is contained within this Rectangle.
-     * @function
-     * @memberOf Rectangle#
-     * @param {Object} point An object with x and y values.
-     * @return {Boolean} True if point is in shape else false
-     */
-    pointInShape: function(point){
-      return ((point.x >= (this.x - this.halfWidth)) && (point.x <= (this.x + this.halfWidth)) && (point.y >= (this.y - this.halfHeight)) && (point.y <= (this.y + this.halfHeight)));
-    }
   });
 
 });
@@ -12486,14 +13129,544 @@ define([
 
 });
 },
+'frozen/utils/pointInPolygon':function(){
+define(function(){
+
+  'use strict';
+
+  // Using Ray-Casting formula based on
+  // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+  // and https://github.com/substack/point-in-polygon/
+  // Re-written for most readability and for use with point objects instead of arrays
+
+  function pointInPoly(point, polygon){
+    if(!point || !polygon){
+      return false;
+    }
+
+    var poly = polygon.points || polygon;
+
+    var insidePoly = false;
+    var j = poly.length - 1;
+
+    for(var i = 0; i < poly.length; j = i++){
+      var xi = poly[i].x;
+      var yi = poly[i].y;
+      var xj = poly[j].x;
+      var yj = poly[j].y;
+
+      if(yi > point.y !== yj > point.y){
+        if(point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi){
+          insidePoly = !insidePoly;
+        }
+      }
+    }
+
+    return insidePoly;
+  }
+
+  return pointInPoly;
+});
+},
+'frozen/box2d/entities/Polygon':function(){
+/**
+ * This Entity represents a polygon which is build from an array of points.
+ * @name Polygon
+ * @constructor Polygon
+ * @extends Entity
+ */
+
+define([
+  'dcl',
+  './Entity',
+  '../../utils/scalePoints',
+  '../../utils/pointInPolygon',
+  '../../utils/translatePoints'
+], function(dcl, Entity, scalePoints, pointInPolygon, translatePoints){
+
+  'use strict';
+
+  return dcl(Entity, {
+    declaredClass: 'frozen/box2d/entities/Polygon',
+    /**
+     * An array of objects that have x and y values.
+     * @type {Array}
+     * @memberOf Polygon#
+     * @default
+     */
+    points: [],
+
+    /**
+     * Draws the Polygon at a given scale
+     * @function
+     * @memberOf Polygon#
+     * @param {Context} ctx The drawing context
+     * @param {Number} scale The scale at which to draw
+     */
+    draw: dcl.superCall(function(sup){
+      return function(ctx, scale){
+        scale = scale || this.scale || 1;
+        var ogLineWidth = ctx.lineWidth;
+        ctx.lineWidth = this.lineWidth;
+        ctx.save();
+        ctx.translate(this.x * scale, this.y * scale);
+        ctx.rotate(this.angle);
+        ctx.translate(-(this.x) * scale, -(this.y) * scale);
+        ctx.fillStyle = this.fillStyle;
+        ctx.strokeStyle = this.strokeStyle;
+
+        ctx.beginPath();
+        ctx.moveTo((this.x + this.points[0].x) * scale, (this.y + this.points[0].y) * scale);
+        for (var i = 1; i < this.points.length; i++) {
+           ctx.lineTo((this.points[i].x + this.x) * scale, (this.points[i].y + this.y) * scale);
+        }
+        ctx.lineTo((this.x + this.points[0].x) * scale, (this.y + this.points[0].y) * scale);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.restore();
+        ctx.lineWidth = ogLineWidth;
+        sup.apply(this, [ctx, scale]);
+      };
+    }),
+
+    /**
+     * Scale this shape
+     * @function
+     * @memberOf Polygon#
+     * @param {Number} scale The amount the shape should scale
+     */
+    scaleShape: dcl.superCall(function(sup){
+      return function(scale){
+        this.points = scalePoints(this.points, scale);
+        sup.apply(this, [scale]);
+      };
+    }),
+
+    /**
+     * Checks if a given point is contained within this Polygon.
+     * @function
+     * @memberOf Polygon#
+     * @param {Object} point An object with x and y values.
+     * @return {Boolean} True if point is in shape else false
+     */
+    pointInShape: function(point){
+      return pointInPolygon(point, translatePoints(this.points, this));
+    }
+  });
+
+});
+},
+'frozen/box2d/entities/Rectangle':function(){
+/**
+ * This Entity represents a Rectangle
+ * @name Rectangle
+ * @constructor Rectangle
+ * @extends Entity
+ */
+
+define([
+  'dcl',
+  './Entity'
+], function(dcl, Entity){
+
+  'use strict';
+
+  return dcl(Entity, {
+    declaredClass: 'frozen/box2d/entities/Rectangle',
+    /**
+     * Half of the Rectangle's total width
+     * @type {Number}
+     * @memberOf Rectangle#
+     * @default
+     */
+    halfWidth: 1,
+    /**
+     * Half of the Rectangle's total width
+     * @type {Number}
+     * @memberOf Rectangle#
+     * @default
+     */
+    halfHeight: 1,
+
+    /**
+     * Draws the Rectangle at a given scale
+     * @function
+     * @memberOf Rectangle#
+     * @param {Context} ctx The drawing context
+     * @param {Number} scale The scale at which to draw
+     */
+    draw: dcl.superCall(function(sup){
+      return function(ctx, scale){
+        scale = scale || this.scale || 1;
+        var ogLineWidth = ctx.lineWidth;
+        ctx.lineWidth = this.lineWidth;
+        ctx.save();
+        ctx.translate(this.x * scale, this.y * scale);
+        ctx.rotate(this.angle);
+        ctx.translate(-(this.x) * scale, -(this.y) * scale);
+        ctx.fillStyle = this.fillStyle;
+        ctx.strokeStyle = this.strokeStyle;
+        ctx.fillRect(
+          (this.x-this.halfWidth) * scale,
+          (this.y-this.halfHeight) * scale,
+          (this.halfWidth*2) * scale,
+          (this.halfHeight*2) * scale
+        );
+        ctx.strokeRect(
+          (this.x-this.halfWidth) * scale,
+          (this.y-this.halfHeight) * scale,
+          (this.halfWidth*2) * scale,
+          (this.halfHeight*2) * scale
+        );
+        ctx.restore();
+        ctx.lineWidth = ogLineWidth;
+        sup.apply(this, [ctx, scale]);
+      };
+    }),
+
+    /**
+     * Scale this shape
+     * @function
+     * @memberOf Rectangle#
+     * @param {Number} scale The amount the shape should scale
+     */
+    scaleShape: dcl.superCall(function(sup){
+      return function(scale){
+        this.halfHeight = this.halfHeight * scale;
+        this.halfWidth = this.halfWidth * scale;
+        sup.apply(this, [scale]);
+      };
+    }),
+
+    /**
+     * Checks if a given point is contained within this Rectangle.
+     * @function
+     * @memberOf Rectangle#
+     * @param {Object} point An object with x and y values.
+     * @return {Boolean} True if point is in shape else false
+     */
+    pointInShape: function(point){
+      return ((point.x >= (this.x - this.halfWidth)) && (point.x <= (this.x + this.halfWidth)) && (point.y >= (this.y - this.halfHeight)) && (point.y <= (this.y + this.halfHeight)));
+    }
+  });
+
+});
+},
+'frozen/box2d/joints':function(){
+define([
+  './joints/Distance',
+  './joints/Prismatic',
+  './joints/Revolute'
+], function(){
+
+  'use strict';
+
+  /*
+   * This returns a map of all the dependencies
+   * Keyed by their declaredClass property (with package replaced)
+   */
+
+  var args = Array.prototype.slice.call(arguments);
+
+  var entities = {};
+
+  for(var idx = 0; idx < args.length; idx++){
+    var type = args[idx];
+    var key = type.prototype.declaredClass.replace('frozen/box2d/joints/', '');
+    entities[key] = type;
+  }
+
+  return entities;
+
+});
+},
+'frozen/box2d/joints/Distance':function(){
+/**
+ * This represents a distance joint between two bodies.
+ * This type of joint forces two bodies to keep a constant distance for each other.
+ * @name Distance
+ * @constructor Distance
+ * @extends Joint
+ */
+
+define([
+  'dcl',
+  'lodash',
+  './Joint'
+], function(dcl, _, Joint){
+
+  'use strict';
+
+  // box2d globals
+  var B2Vec2 = Box2D.Common.Math.b2Vec2;
+  var B2DistanceJointDef = Box2D.Dynamics.Joints.b2DistanceJointDef;
+
+  return dcl(Joint, {
+    declaredClass: 'frozen/box2d/joints/Distance',
+    /**
+     * A point on the second entity where the joint will be attached. If no point is specified, the second body will be attached at its center point.
+     * @type {Object}
+     * @memberOf Distance#
+     * @default
+     */
+    bodyPoint2: null,
+
+    /**
+     * Scales the positions bodies that the joint are connected at.
+     * @function
+     * @memberOf Distance#
+     * @param {Number} scale the scale to multiply the dimentions by
+     */
+    scaleJointLocation: dcl.superCall(function(sup){
+      return function(scale){
+        if(scale && this.bodyPoint2){
+          this.bodyPoint2.x = this.bodyPoint2.x * scale;
+          this.bodyPoint2.y = this.bodyPoint2.y * scale;
+          this.alreadyScaled = true;
+        }
+        sup.apply(this, [scale]);
+      };
+    }),
+
+    /**
+     * Creates and adds this joint in the Box2d world.
+     * @function
+     * @memberOf Distance#
+     * @param {Box} the box in which to create the joint.
+     * @return {b2Joint} Joint created by box2d
+     */
+    createB2Joint: function(box){
+      if(box && box.bodiesMap && box.b2World && box.jointsMap && !box.jointsMap[this.id]){
+        var body1 = box.bodiesMap[this.bodyId1];
+        var body2 = box.bodiesMap[this.bodyId2];
+        if(body1 && body2){
+          var vec1, vec2;
+          if(this.bodyPoint1){
+            vec1 = new B2Vec2(this.bodyPoint1.x, this.bodyPoint1.y);
+          }
+          if(this.bodyPoint2){
+            vec2 = new B2Vec2(this.bodyPoint2.x, this.bodyPoint2.y);
+          }
+          vec1 = vec1 || body1.GetWorldCenter();
+          vec2 = vec2 || body2.GetWorldCenter();
+          var joint = new B2DistanceJointDef();
+          joint.Initialize(body1, body2, vec1, vec2);
+
+          if (this.jointAttributes) {
+            _.assign(joint, this.jointAttributes);
+          }
+          return box.b2World.CreateJoint(joint);
+        }
+      }
+    }
+
+  });
+
+});
+},
+'frozen/box2d/joints/Joint':function(){
+/**
+ * This represents a joint between two bodies.
+ * @name Joint
+ * @constructor Joint
+ */
+
+define([
+  'dcl',
+  'dcl/bases/Mixer'
+], function(dcl, Mixer){
+
+  'use strict';
+
+  return dcl(Mixer, {
+    /**
+     * The declared class - used for debugging in dcl
+     * @type {String}
+     * @memberOf Joint#
+     * @default
+     */
+    declaredClass: 'frozen/box2d/joints/Joint',
+    /**
+     * The id of the first entity that will be attached to this joint
+     * @type {String}
+     * @memberOf Joint#
+     * @default
+     */
+    bodyId1: null,
+    /**
+     * The id of the second entity that will be attached to this joint
+     * @type {String}
+     * @memberOf Joint#
+     * @default
+     */
+    bodyId2: null,
+    /**
+     * A point on the first entity where be attached to the second body. If no point is specified, the first body will be attached at its center point.
+     * @type {Object}
+     * @memberOf Joint#
+     * @default
+     */
+    bodyPoint1: null,
+    /**
+     * An object with any other properties that should be mixed into the box2d joint definition.
+     * @type {Object}
+     * @memberOf Joint#
+     * @default
+     */
+    jointAttributes: null,
+
+    /**
+     * Scales the position that on the first body that the joint is connected at.
+     * @function
+     * @memberOf Joint#
+     * @param {Number} scale the scale to multiply the dimentions by
+     */
+    scaleJointLocation: function(scale){
+      if(scale && this.bodyPoint1){
+        this.bodyPoint1.x = this.bodyPoint1.x * scale;
+        this.bodyPoint1.y = this.bodyPoint1.y * scale;
+        this.alreadyScaled = true;
+      }
+    }
+
+  });
+
+});
+},
+'frozen/box2d/joints/Prismatic':function(){
+/**
+ * This represents a prismatic joint between two bodies.
+ * This type of joint forces a body to keep its angle rotation consitent with another body
+ * @name Prismatic
+ * @constructor Prismatic
+ * @extends Joint
+ */
+
+define([
+  'dcl',
+  'lodash',
+  './Joint'
+], function(dcl, _, Joint){
+
+  'use strict';
+
+  // box2d globals
+  var B2Vec2 = Box2D.Common.Math.b2Vec2;
+  var B2PrismaticJointDef = Box2D.Dynamics.Joints.b2PrismaticJointDef;
+
+  return dcl(Joint, {
+    declaredClass: 'frozen/box2d/joints/Prismatic',
+    /**
+     * An object with x and y numeric components representing the line in which the entities can move relative to each other
+     * @type {Object}
+     * @memberOf Prismatic#
+     * @default
+     */
+    axisScale: null,
+
+    /**
+     * Creates and adds this joint in the Box2d world.
+     * @function
+     * @memberOf Prismatic#
+     * @param {Box} the box in which to create the joint.
+     * @return {b2Joint} Joint created by box2d
+     */
+    createB2Joint: function(box){
+      if(box && box.bodiesMap && box.b2World && box.jointsMap && !box.jointsMap[this.id]){
+        var body1 = box.bodiesMap[this.bodyId1];
+        var body2 = box.bodiesMap[this.bodyId2];
+        if(body1 && body2){
+          var vec1;
+          if(this.bodyPoint1){
+            vec1 = new B2Vec2(this.bodyPoint1.x, this.bodyPoint1.y);
+          }
+          vec1 = vec1 || body1.GetWorldCenter();
+          var joint = new B2PrismaticJointDef();
+          var axis;
+          if(this.axisScale){
+            axis = new B2Vec2(this.axisScale.x, this.axisScale.y);
+          }else{
+            axis = new B2Vec2(1, 0);
+          }
+          joint.Initialize(body1, body2, vec1, axis);
+
+          if (this.jointAttributes) {
+            _.assign(joint, this.jointAttributes);
+          }
+          return box.b2World.CreateJoint(joint);
+        }
+      }
+    }
+
+  });
+
+});
+},
+'frozen/box2d/joints/Revolute':function(){
+/**
+ * This represents a revolute joint between two bodies.
+ * This allow for rotation of one body around a point of another.
+ * @name Revolute
+ * @constructor Revolute
+ * @extends Joint
+ */
+
+define([
+  'dcl',
+  'lodash',
+  './Joint'
+], function(dcl, _, Joint){
+
+  'use strict';
+
+  // box2d globals
+  var B2Vec2 = Box2D.Common.Math.b2Vec2;
+  var B2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef;
+
+  return dcl(Joint, {
+    declaredClass: 'frozen/box2d/joints/Revolute',
+    /**
+     * Creates and adds this joint in the Box2d world.
+     * @function
+     * @memberOf Revolute#
+     * @param {Box} the box in which to create the joint.
+     * @return {b2Joint} Joint created by box2d
+     */
+    createB2Joint: function(box){
+      if(box && box.bodiesMap && box.b2World && box.jointsMap && !box.jointsMap[this.id]){
+        var body1 = box.bodiesMap[this.bodyId1];
+        var body2 = box.bodiesMap[this.bodyId2];
+        if(body1 && body2){
+          var vec1;
+          if(this.bodyPoint1){
+            vec1 = new B2Vec2(this.bodyPoint1.x, this.bodyPoint1.y);
+          }
+          vec1 = vec1 || body1.GetWorldCenter();
+          var joint = new B2RevoluteJointDef();
+          var axis;
+          joint.Initialize(body1, body2, vec1, axis);
+
+          if (this.jointAttributes) {
+            _.assign(joint, this.jointAttributes);
+          }
+          return box.b2World.CreateJoint(joint);
+        }
+      }
+    }
+
+  });
+
+});
+},
 'game/UI':function(){
 define([
-  './state',
   './levelData',
   './getHoleScoreName',
   'dcl',
   'dojo/domReady!'
-], function(state, levelData, getHoleScoreName, dcl){
+], function(levelData, getHoleScoreName, dcl){
 
   'use strict';
 
@@ -12506,8 +13679,10 @@ define([
     totalScore: 0,
     messageTime: 0,
     scoreTime: 0,
+    waterTime: 0,
     strokes: 0,
     tooHard: false,
+    water: false,
     changeLevel: false,
     constructor: function(){
       this.scoreEl = document.getElementById('score');
@@ -12528,6 +13703,8 @@ define([
       if(this.messageTime > 0){
         this.messageTime -= millis;
         this.tooHard = true;
+      } else if(this.waterTime > 0){
+        this.water = true;
       } else {
         this.tooHard = false;
       }
@@ -12538,9 +13715,16 @@ define([
           this.changeLevel = true;
         }
       }
+
+      if(this.waterTime > 0){
+        this.waterTime -= millis;
+        if(this.waterTime <= 0){
+          this.water = false;
+        }
+      }
     },
-    draw: function(ctx){
-      if(state.level === levelData.length){
+    draw: function(ctx, level){
+      if(level === levelData.length){
         this.totalScore = 0;
         this.scoreEl.innerHTML = '';
       } else {
@@ -12560,19 +13744,56 @@ define([
         if(this.tooHard){
           this.message(ctx, 'Too Hard!', '#F00');
         }
+        if(this.water){
+          this.message(ctx, 'Water Hazard!', '#00F');
+        }
       }
     },
     message: function(ctx, msg, color){
+      ctx.textAlign = 'center';
       ctx.fillStyle = color;
       ctx.strokeStyle = '#000';
       ctx.font = 'bold 40px arial';
-      ctx.fillText(msg, 180, 180);
-      ctx.strokeText(msg, 180, 180);
+      ctx.fillText(msg, ctx.canvas.width/2, 180);
+      ctx.strokeText(msg, ctx.canvas.width/2, 180);
     },
     setTime: function(time){
       this[time] = MAX_MESSAGE_TIME;
     }
   });
+
+});
+},
+'game/getHoleScoreName':function(){
+define(function(){
+
+  'use strict';
+
+  return function getHoleScoreName(par, strokes){
+    if(strokes === 1){
+      return 'Hole in one!';
+    } else {
+      var diff = strokes - par;
+      if(diff === -2){
+        return 'Eagle';
+      }
+      else if(diff === -1){
+        return 'Birdy';
+      }
+      else if(diff === 0){
+        return 'Par';
+      }
+      else if(diff === 1){
+        return 'Bogey';
+      }
+      else if(diff === 2){
+        return 'Double Bogey';
+      }
+      else{
+        return '+' + diff;
+      }
+    }
+  };
 
 });
 },
@@ -12923,7 +14144,7 @@ define([
       fixDef.restitution = entity.restitution;
       fixDef.density = entity.density;
       fixDef.friction = entity.friction;
-
+      fixDef.isSensor = entity.sensor || false;
 
       //these three props are for custom collision filtering
       if(entity.maskBits != null){
