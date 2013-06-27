@@ -1082,9 +1082,21 @@ define([
           "type": "Circle",
           "sensor": true,
           "impulseInward": true,
-          "impulsePercentage": 3,
+          "impulsePercentage": 2,
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 5
+        },
+        {
+          "x": 436.5,
+          "y": 227.5,
+          "radius": 145,
+          "staticBody": true,
+          "type": "Circle",
+          "sensor": true,
+          "impulsePercentage": 1,
+          "impulseInward": false,
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 6
         },
         {
           "x": 436.5,
@@ -1093,10 +1105,10 @@ define([
           "staticBody": true,
           "type": "Circle",
           "sensor": true,
-          "impulsePercentage": 1.5,
+          "impulsePercentage": 0.2,
           "impulseInward": false,
           "fillStyle": "rgba(255,0,0,0.2)",
-          "id": 6
+          "id": 7
         },
         {
           "x": 436.5,
