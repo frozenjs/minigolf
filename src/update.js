@@ -13,6 +13,7 @@ define([
   var SOUND_IMPULSE_MAX = 50;
   var MAX_DISTANCE_FOR_GOAL = 0.4;
   var ZONE_IMPULSE = 0.2;
+  var SLOWDOWN_PERCENTAGE = 0.8;
 
   return function(millis){
     var entities = this.entities;
@@ -22,7 +23,18 @@ define([
     var box = this.box;
     var level = levelData[this.level];
 
+    var safe = false;
+
     if(ball && (this.ui.scoreTime <= 0)){
+
+      _.forEach(ball.touching, function(touched, id){
+          if(touched && entities[id].safe){
+            safe = true;
+          }
+      });
+
+      console.log('safe', ball.safe);
+
       if(ball.collisions && ball.collisions.length > 0){
         _.forEach(ball.collisions, function(collision){
           if(collision.impulse > SOUND_IMPULSE_THRESHOLD){
@@ -50,7 +62,7 @@ define([
           console.log('too hard', velocity);
           ui.setTime('messageTime');
         }
-      } else {
+      } else if(!safe){
         _.forEach(ball.touching, function(touched, id){
           if(!touched){
             return;
@@ -62,6 +74,9 @@ define([
             box.setLinearVelocity(ball.id, 0, 0);
             box.setAngularVelocity(ball.id, 0);
             ui.setTime('waterTime');
+          }else if(entity.sand){
+            box.setLinearVelocity(ball.id, ball.linearVelocity.x * SLOWDOWN_PERCENTAGE, ball.linearVelocity.y * SLOWDOWN_PERCENTAGE);
+            box.setAngularVelocity(ball.id,  ball.angularVelocity * SLOWDOWN_PERCENTAGE);
           } else if(entity.type === 'Rectangle' || entity.type === 'Polygon'){
             box.applyImpulseDegrees(ball.id, entity.impulseAngle, ZONE_IMPULSE * entity.impulsePercentage);
           } else {

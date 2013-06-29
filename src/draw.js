@@ -23,13 +23,15 @@ define([
 
     context.lineWidth = 1;
     context.drawImage(levelData[this.level].backImg, 0, 0, this.width, this.height);
-    ball.draw(context);
+
 
     _.forEach(this.entities, function(entity){
       if(!entity.staticBody || has('debug')){
         entity.draw(context);
       }
     });
+
+    ball.draw(context);
 
     if(im.mouseAction.position){
       var ballPt = scalePoints(ball, ball.scale);

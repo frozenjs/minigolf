@@ -11,8 +11,10 @@ define([
   'frozen/plugins/loadImage!images/hole9.png',
   'frozen/plugins/loadImage!images/hole10.png',
   'frozen/plugins/loadImage!images/hole11.png',
-  'frozen/plugins/loadImage!images/hole12.png'
-], function(_, hole1, hole2, hole3, hole4, hole5, hole6, hole7, hole8, hole9, hole10, hole11, hole12){
+  'frozen/plugins/loadImage!images/hole12.png',
+  'frozen/plugins/loadImage!images/hole13.png',
+  'frozen/plugins/loadImage!images/hole14.png'
+], function(_, hole1, hole2, hole3, hole4, hole5, hole6, hole7, hole8, hole9, hole10, hole11, hole12, hole13, hole14){
 
   'use strict';
 
@@ -559,26 +561,26 @@ define([
         },
         {
           "x": 155,
-          "y": 300.5,
+          "y": 296.5,
           "halfWidth": 110,
-          "halfHeight": 52.5,
+          "halfHeight": 49.5,
           "staticBody": true,
           "type": "Rectangle",
           "sensor": true,
-          "impulsePercentage": 1,
+          "impulsePercentage": 0.8,
           "impulseAngle": 180,
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 8
         },
         {
           "x": 155.5,
-          "y": 145,
+          "y": 149,
           "halfWidth": 110.5,
-          "halfHeight": 59,
+          "halfHeight": 55.5,
           "staticBody": true,
           "type": "Rectangle",
           "sensor": true,
-          "impulsePercentage": 1,
+          "impulsePercentage": 0.8,
           "impulseAngle": 0,
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 9
@@ -2045,7 +2047,7 @@ define([
         {
           "x": 551.5,
           "y": 204,
-          "radius": 6.708203932499369,
+          "radius": 8,
           "staticBody": false,
           "type": "Circle",
           "fillStyle": "rgba(255,0,0,0.2)",
@@ -2058,7 +2060,305 @@ define([
         "width": 700
       },
       "backImg": null
+    },
+    //Level 13
+    {
+      "entities": [
+        {
+          "x": 348,
+          "y": 41.5,
+          "halfWidth": 345,
+          "halfHeight": 35.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 0
+        },
+        {
+          "x": 665.5,
+          "y": 223,
+          "halfWidth": 30.5,
+          "halfHeight": 216,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 1
+        },
+        {
+          "x": 346,
+          "y": 400.5,
+          "halfWidth": 342,
+          "halfHeight": 33.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 2
+        },
+        {
+          "x": 31.5,
+          "y": 221.5,
+          "halfWidth": 26.5,
+          "halfHeight": 211.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 3
+        },
+        {
+          "x": 251,
+          "y": 222,
+          "radius": 96,
+          "staticBody": true,
+          "sensor": true,
+          "sand": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 4
+        },
+        {
+          "x": 678,
+          "y": 222,
+          "radius": 196,
+          "staticBody": true,
+          "sensor": true,
+          "sand": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 5
+        },
+        {
+          "x": 92.5,
+          "y": 221.5,
+          "radius": 8,
+          "staticBody": false,
+          "sensor": false,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": "ball"
+        },
+        {
+          "x": 458,
+          "y": 227,
+          "radius": 6.77,
+          "staticBody": false,
+          "sensor": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": "goal"
+        }
+      ],
+      "joints": [],
+      "canvas": {
+        "height": 440,
+        "width": 700
+      },
+      "backImg": null
+    },
+    //Level 14
+    {
+  "entities": [
+    {
+      "points": [
+        {
+          "x": -266.5,
+          "y": -151.25
+        },
+        {
+          "x": 285.5,
+          "y": 120.75
+        },
+        {
+          "x": 249.5,
+          "y": 150.75
+        },
+        {
+          "x": -268.5,
+          "y": -120.25
+        }
+      ],
+      "x": 410.5,
+      "y": 152.25,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Polygon",
+      "id": 0
+    },
+    {
+      "points": [
+        {
+          "x": 50,
+          "y": -68
+        },
+        {
+          "x": 88,
+          "y": -63
+        },
+        {
+          "x": -68,
+          "y": 77
+        },
+        {
+          "x": -70,
+          "y": 54
+        }
+      ],
+      "x": 606,
+      "y": 356,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Polygon",
+      "id": 1
+    },
+    {
+      "points": [
+        {
+          "x": -305.4,
+          "y": -173.8
+        },
+        {
+          "x": 212.60000000000002,
+          "y": 103.19999999999999
+        },
+        {
+          "x": 213.60000000000002,
+          "y": 104.19999999999999
+        },
+        {
+          "x": 219.60000000000002,
+          "y": 128.2
+        },
+        {
+          "x": -340.4,
+          "y": -161.8
+        }
+      ],
+      "x": 342.4,
+      "y": 306.8,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Polygon",
+      "id": 2
+    },
+    {
+      "points": [
+        {
+          "x": 63.75,
+          "y": -80.25
+        },
+        {
+          "x": 70.75,
+          "y": -53.25
+        },
+        {
+          "x": -51.25,
+          "y": 69.75
+        },
+        {
+          "x": -83.25,
+          "y": 63.75
+        }
+      ],
+      "x": 94.25,
+      "y": 83.25,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Polygon",
+      "id": 3
+    },
+    {
+      "points": [
+        {
+          "x": 29.399999999999977,
+          "y": -86.4
+        },
+        {
+          "x": 119.39999999999998,
+          "y": -43.400000000000006
+        },
+        {
+          "x": 7.399999999999977,
+          "y": 73.6
+        },
+        {
+          "x": -77.60000000000002,
+          "y": 28.599999999999994
+        },
+        {
+          "x": -78.60000000000002,
+          "y": 27.599999999999994
+        }
+      ],
+      "x": 327.6,
+      "y": 226.4,
+      "staticBody": true,
+      "sensor": true,
+      "water": true,
+      "type": "Polygon",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "water_hazard"
+    },
+    {
+      "x": 347,
+      "y": 219,
+      "radius": 13.416407864998739,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pin",
+      "maskBits": 2
+    },
+    {
+      "x": 347,
+      "y": 219,
+      "halfWidth": 62,
+      "halfHeight": 22,
+      "staticBody": false,
+      "sensor": true,
+      "safe": true,
+      "type": "Rectangle",
+      "fillStyle": "#62A66F",
+      "strokeStyle": "#62A66F",
+      "id": "bar"
+    },
+    {
+      "x": 135,
+      "y": 104,
+      "radius": 6.77,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "goal"
+    },
+    {
+      "x": 567.5,
+      "y": 337,
+      "radius": 8,
+      "staticBody": false,
+      "type": "Circle",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "ball"
     }
+  ],
+  "joints": [
+    {
+      "bodyId1": "pin",
+      "bodyId2": "bar",
+      "type": "Revolute",
+      "id": "hj",
+      "jointAttributes": {
+        "motorSpeed": 0.3,
+        "enableMotor": true,
+        "maxMotorTorque": 3500
+      }
+    }
+  ],
+  "canvas": {
+    "height": 440,
+    "width": 700
+  },
+  "backImg": null
+}
   ];
 
   var args = Array.prototype.slice.call(arguments, 1);
