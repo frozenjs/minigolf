@@ -6,9 +6,8 @@ define([
   'frozen/utils/distance',
   'frozen/utils/scalePoints',
   'frozen/utils/translatePoints',
-  'frozen/utils/radiansFromCenter',
-  'frozen/plugins/loadImage!images/putter.png'
-], function(levelData, rotateVector, _, has, distance, scalePoints, translatePoints, radiansFromCenter, putter){
+  'frozen/utils/radiansFromCenter'
+], function(levelData, rotateVector, _, has, distance, scalePoints, translatePoints, radiansFromCenter){
 
   'use strict';
 
