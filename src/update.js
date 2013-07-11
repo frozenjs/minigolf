@@ -33,8 +33,6 @@ define([
           }
       });
 
-      console.log('safe', ball.safe);
-
       if(ball.collisions && ball.collisions.length > 0){
         _.forEach(ball.collisions, function(collision){
           if(collision.impulse > SOUND_IMPULSE_THRESHOLD){

@@ -8,8 +8,8 @@ define([
 
   'use strict';
 
-  var IMPULSE_PER_PIXEL = 0.1;
-  var MAX_IMPULSE_PIXELS = 100;
+  var IMPULSE_PER_PIXEL = 0.066666667;
+  var MAX_IMPULSE_PIXELS = 150;
 
   return function(im){
     var ball = this.entities.ball;
