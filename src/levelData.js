@@ -14,8 +14,9 @@ define([
   'frozen/plugins/loadImage!images/hole12.png',
   'frozen/plugins/loadImage!images/hole13.png',
   'frozen/plugins/loadImage!images/hole14.png',
-  'frozen/plugins/loadImage!images/hole15.png'
-], function(_, hole1, hole2, hole3, hole4, hole5, hole6, hole7, hole8, hole9, hole10, hole11, hole12, hole13, hole14, hole15){
+  'frozen/plugins/loadImage!images/hole15.png',
+  'frozen/plugins/loadImage!images/hole16.png'
+], function(_, hole1, hole2, hole3, hole4, hole5, hole6, hole7, hole8, hole9, hole10, hole11, hole12, hole13, hole14, hole15, hole16){
 
   'use strict';
 
@@ -2142,7 +2143,7 @@ define([
           "x": 458,
           "y": 227,
           "radius": 6.77,
-          "staticBody": false,
+          "staticBody": true,
           "sensor": true,
           "type": "Circle",
           "fillStyle": "rgba(255,0,0,0.2)",
@@ -2826,13 +2827,13 @@ define([
       "x": 345.5,
       "y": 214,
       "halfWidth": 225.5,
-      "halfHeight": 136,
+      "halfHeight": 132,
       "staticBody": true,
       "sensor": true,
       "type": "Rectangle",
       "fillStyle": "rgba(255,0,0,0.2)",
       "impulseAngle": 180,
-      "impulsePercentage": 1,
+      "impulsePercentage": 0.6,
       "id": 4
     },
     {
@@ -2862,7 +2863,209 @@ define([
     "width": 700
   },
   "backImg": null
+},
+//Level 16
+{
+  "entities": [
+    {
+      "x": 351.5,
+      "y": 40,
+      "halfWidth": 348.5,
+      "halfHeight": 38,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Rectangle",
+      "id": 0
+    },
+    {
+      "x": 278.5,
+      "y": 219,
+      "halfWidth": 211.5,
+      "halfHeight": 15,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Rectangle",
+      "id": 1
+    },
+    {
+      "x": 42.5,
+      "y": 219,
+      "halfWidth": 35.5,
+      "halfHeight": 215,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Rectangle",
+      "id": 2
+    },
+    {
+      "x": 347.5,
+      "y": 396.5,
+      "halfWidth": 336.5,
+      "halfHeight": 34.5,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Rectangle",
+      "id": 3
+    },
+    {
+      "x": 658.5,
+      "y": 216,
+      "halfWidth": 38.5,
+      "halfHeight": 207,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Rectangle",
+      "id": 4
+    },
+    {
+      "x": 250,
+      "y": 141,
+      "radius": 66,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "impulsePercentage": 0.7,
+      "impulseInward": false,
+      "id": "c1"
+    },
+    {
+      "x": 250,
+      "y": 141,
+      "radius": 28,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "impulsePercentage": 0.7,
+      "impulseInward": true,
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "c2"
+    },
+    {
+      "x": 416,
+      "y": 141,
+      "radius": 66,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "impulsePercentage": 0.7,
+      "impulseInward": false,
+      "id": "c3"
+    },
+    {
+      "x": 416,
+      "y": 141,
+      "radius": 28,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "impulsePercentage": 0.7,
+      "impulseInward": true,
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "c4"
+    },
+    {
+      "x": 248,
+      "y": 300,
+      "radius": 66,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "impulsePercentage": 0.7,
+      "impulseInward": false,
+      "id": "c5"
+    },
+    {
+      "x": 248,
+      "y": 300,
+      "radius": 28,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "impulsePercentage": 0.7,
+      "impulseInward": true,
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "c6"
+    },
+    {
+      "x": 416,
+      "y": 299,
+      "radius": 66,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "impulsePercentage": 0.7,
+      "impulseInward": false,
+      "id": "c7"
+    },
+    {
+      "x": 416,
+      "y": 299,
+      "radius": 28,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "impulsePercentage": 0.7,
+      "impulseInward": true,
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "c8"
+    },
+    {
+      "x": 553,
+      "y": 221,
+      "radius": 66,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "impulsePercentage": 0.7,
+      "impulseInward": false,
+      "id": "c9"
+    },
+    {
+      "x": 553,
+      "y": 221,
+      "radius": 28,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "impulsePercentage": 0.7,
+      "impulseInward": true,
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "c10"
+    },
+    {
+      "x": 122,
+      "y": 302,
+      "radius": 4,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "goal"
+    },
+    {
+      "x": 120,
+      "y": 141,
+      "radius": 8,
+      "staticBody": false,
+      "sensor": false,
+      "type": "Circle",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "ball"
+    }
+  ],
+  "joints": [],
+  "canvas": {
+    "height": 440,
+    "width": 700
+  },
+  "backImg": null
 }
+
   ];
 
   var args = Array.prototype.slice.call(arguments, 1);
