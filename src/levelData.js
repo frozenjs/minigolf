@@ -11,8 +11,11 @@ define([
   'frozen/plugins/loadImage!images/hole9.png',
   'frozen/plugins/loadImage!images/hole10.png',
   'frozen/plugins/loadImage!images/hole11.png',
-  'frozen/plugins/loadImage!images/hole12.png'
-], function(_, hole1, hole2, hole3, hole4, hole5, hole6, hole7, hole8, hole9, hole10, hole11, hole12){
+  'frozen/plugins/loadImage!images/hole12.png',
+  'frozen/plugins/loadImage!images/hole13.png',
+  'frozen/plugins/loadImage!images/hole14.png',
+  'frozen/plugins/loadImage!images/hole15.png'
+], function(_, hole1, hole2, hole3, hole4, hole5, hole6, hole7, hole8, hole9, hole10, hole11, hole12, hole13, hole14, hole15){
 
   'use strict';
 
@@ -559,26 +562,26 @@ define([
         },
         {
           "x": 155,
-          "y": 300.5,
+          "y": 296.5,
           "halfWidth": 110,
-          "halfHeight": 52.5,
+          "halfHeight": 49.5,
           "staticBody": true,
           "type": "Rectangle",
           "sensor": true,
-          "impulsePercentage": 1,
+          "impulsePercentage": 0.8,
           "impulseAngle": 180,
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 8
         },
         {
           "x": 155.5,
-          "y": 145,
+          "y": 149,
           "halfWidth": 110.5,
-          "halfHeight": 59,
+          "halfHeight": 55.5,
           "staticBody": true,
           "type": "Rectangle",
           "sensor": true,
-          "impulsePercentage": 1,
+          "impulsePercentage": 0.8,
           "impulseAngle": 0,
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 9
@@ -1089,11 +1092,11 @@ define([
         {
           "x": 436.5,
           "y": 227.5,
-          "radius": 145,
+          "radius": 141,
           "staticBody": true,
           "type": "Circle",
           "sensor": true,
-          "impulsePercentage": 1,
+          "impulsePercentage": 0.8,
           "impulseInward": false,
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 6
@@ -1101,7 +1104,7 @@ define([
         {
           "x": 436.5,
           "y": 227.5,
-          "radius": 159,
+          "radius": 155,
           "staticBody": true,
           "type": "Circle",
           "sensor": true,
@@ -1126,6 +1129,7 @@ define([
         "height": 440,
         "width": 700
       },
+      "maxGoalVelocity": 11,
       "backImg": null
     },
     //level 10
@@ -2045,7 +2049,7 @@ define([
         {
           "x": 551.5,
           "y": 204,
-          "radius": 6.708203932499369,
+          "radius": 8,
           "staticBody": false,
           "type": "Circle",
           "fillStyle": "rgba(255,0,0,0.2)",
@@ -2058,7 +2062,807 @@ define([
         "width": 700
       },
       "backImg": null
+    },
+    //Level 13
+    {
+      "entities": [
+        {
+          "x": 348,
+          "y": 41.5,
+          "halfWidth": 345,
+          "halfHeight": 35.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 0
+        },
+        {
+          "x": 665.5,
+          "y": 223,
+          "halfWidth": 30.5,
+          "halfHeight": 216,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 1
+        },
+        {
+          "x": 346,
+          "y": 400.5,
+          "halfWidth": 342,
+          "halfHeight": 33.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 2
+        },
+        {
+          "x": 31.5,
+          "y": 221.5,
+          "halfWidth": 26.5,
+          "halfHeight": 211.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 3
+        },
+        {
+          "x": 251,
+          "y": 222,
+          "radius": 96,
+          "staticBody": true,
+          "sensor": true,
+          "sand": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 4
+        },
+        {
+          "x": 678,
+          "y": 222,
+          "radius": 196,
+          "staticBody": true,
+          "sensor": true,
+          "sand": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 5
+        },
+        {
+          "x": 92.5,
+          "y": 221.5,
+          "radius": 8,
+          "staticBody": false,
+          "sensor": false,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": "ball"
+        },
+        {
+          "x": 458,
+          "y": 227,
+          "radius": 6.77,
+          "staticBody": false,
+          "sensor": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": "goal"
+        }
+      ],
+      "joints": [],
+      "canvas": {
+        "height": 440,
+        "width": 700
+      },
+      "backImg": null
+    },
+    //Level 14
+    {
+  "entities": [
+    {
+      "points": [
+        {
+          "x": -266.5,
+          "y": -151.25
+        },
+        {
+          "x": 285.5,
+          "y": 120.75
+        },
+        {
+          "x": 249.5,
+          "y": 150.75
+        },
+        {
+          "x": -268.5,
+          "y": -120.25
+        }
+      ],
+      "x": 410.5,
+      "y": 152.25,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Polygon",
+      "id": 0
+    },
+    {
+      "points": [
+        {
+          "x": 50,
+          "y": -68
+        },
+        {
+          "x": 88,
+          "y": -63
+        },
+        {
+          "x": -68,
+          "y": 77
+        },
+        {
+          "x": -70,
+          "y": 54
+        }
+      ],
+      "x": 606,
+      "y": 356,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Polygon",
+      "id": 1
+    },
+    {
+      "points": [
+        {
+          "x": -305.4,
+          "y": -173.8
+        },
+        {
+          "x": 212.60000000000002,
+          "y": 103.19999999999999
+        },
+        {
+          "x": 213.60000000000002,
+          "y": 104.19999999999999
+        },
+        {
+          "x": 219.60000000000002,
+          "y": 128.2
+        },
+        {
+          "x": -340.4,
+          "y": -161.8
+        }
+      ],
+      "x": 342.4,
+      "y": 306.8,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Polygon",
+      "id": 2
+    },
+    {
+      "points": [
+        {
+          "x": 63.75,
+          "y": -80.25
+        },
+        {
+          "x": 70.75,
+          "y": -53.25
+        },
+        {
+          "x": -51.25,
+          "y": 69.75
+        },
+        {
+          "x": -83.25,
+          "y": 63.75
+        }
+      ],
+      "x": 94.25,
+      "y": 83.25,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Polygon",
+      "id": 3
+    },
+    {
+      "points": [
+        {
+          "x": 29.399999999999977,
+          "y": -86.4
+        },
+        {
+          "x": 119.39999999999998,
+          "y": -43.400000000000006
+        },
+        {
+          "x": 7.399999999999977,
+          "y": 73.6
+        },
+        {
+          "x": -77.60000000000002,
+          "y": 28.599999999999994
+        },
+        {
+          "x": -78.60000000000002,
+          "y": 27.599999999999994
+        }
+      ],
+      "x": 327.6,
+      "y": 226.4,
+      "staticBody": true,
+      "sensor": true,
+      "water": true,
+      "type": "Polygon",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "water_hazard"
+    },
+    {
+      "x": 347,
+      "y": 219,
+      "radius": 13.416407864998739,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pin",
+      "maskBits": 2
+    },
+    {
+      "x": 347,
+      "y": 219,
+      "halfWidth": 62,
+      "halfHeight": 22,
+      "staticBody": false,
+      "sensor": true,
+      "safe": true,
+      "type": "Rectangle",
+      "fillStyle": "#62A66F",
+      "strokeStyle": "#62A66F",
+      "id": "bar"
+    },
+    {
+      "x": 135,
+      "y": 104,
+      "radius": 6.77,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "goal"
+    },
+    {
+      "x": 567.5,
+      "y": 337,
+      "radius": 8,
+      "staticBody": false,
+      "type": "Circle",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "id": "ball"
     }
+  ],
+  "joints": [
+    {
+      "bodyId1": "pin",
+      "bodyId2": "bar",
+      "type": "Revolute",
+      "id": "hj",
+      "jointAttributes": {
+        "motorSpeed": 0.3,
+        "enableMotor": true,
+        "maxMotorTorque": 3500
+      }
+    }
+  ],
+  "canvas": {
+    "height": 440,
+    "width": 700
+  },
+  "backImg": null
+},
+//Level 15
+{
+  "entities": [
+    {
+      "x": 202,
+      "y": 106,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa0",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 274.5,
+      "y": 106,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa1",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 347,
+      "y": 106,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa2",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 419.5,
+      "y": 106,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa3",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 492,
+      "y": 106,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa4",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 202,
+      "y": 179,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa5",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 274.5,
+      "y": 179,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa6",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 347,
+      "y": 179,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa7",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 419.5,
+      "y": 179,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa8",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 492,
+      "y": 179,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa9",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 202,
+      "y": 252,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa10",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 274.5,
+      "y": 252,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa11",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 347,
+      "y": 252,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa12",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 419.5,
+      "y": 252,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa13",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 492,
+      "y": 252,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa14",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 202,
+      "y": 325,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa15",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 274.5,
+      "y": 325,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa16",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 347,
+      "y": 325,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa17",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 419.5,
+      "y": 325,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa18",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 492,
+      "y": 325,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pa19",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 165,
+      "y": 143,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb0",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 237.5,
+      "y": 143,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb1",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 310,
+      "y": 143,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb2",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 382.5,
+      "y": 143,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb3",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 455,
+      "y": 143,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb4",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 527.5,
+      "y": 143,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb5",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 165,
+      "y": 215.5,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb6",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 237.5,
+      "y": 215.5,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb7",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 310,
+      "y": 215.5,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb8",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 382.5,
+      "y": 215.5,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb9",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 455,
+      "y": 215.5,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb10",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 527.5,
+      "y": 215.5,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb11",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 165,
+      "y": 288,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb12",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 237.5,
+      "y": 288,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb13",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 310,
+      "y": 288,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb14",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 382.5,
+      "y": 288,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb15",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 455,
+      "y": 288,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb16",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 527.5,
+      "y": 288,
+      "radius": 10,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Circle",
+      "id": "pb17",
+      "density": 1,
+      "restitution": 0.75
+    },
+    {
+      "x": 67,
+      "y": 217.5,
+      "halfWidth": 59,
+      "halfHeight": 215.5,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Rectangle",
+      "id": 0
+    },
+    {
+      "x": 355.5,
+      "y": 425.5,
+      "halfWidth": 340.5,
+      "halfHeight": 13.5,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Rectangle",
+      "id": 1
+    },
+    {
+      "x": 629,
+      "y": 219.5,
+      "halfWidth": 63,
+      "halfHeight": 215.5,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Rectangle",
+      "id": 2
+    },
+    {
+      "x": 351.5,
+      "y": 16.5,
+      "halfWidth": 343.5,
+      "halfHeight": 13.5,
+      "staticBody": true,
+      "sensor": false,
+      "type": "Rectangle",
+      "id": 3
+    },
+    {
+      "x": 345.5,
+      "y": 214,
+      "halfWidth": 225.5,
+      "halfHeight": 136,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Rectangle",
+      "fillStyle": "rgba(255,0,0,0.2)",
+      "impulseAngle": 180,
+      "impulsePercentage": 1,
+      "id": 4
+    },
+    {
+      "x": 349,
+      "y": 52,
+      "radius": 8,
+      "staticBody": false,
+      "sensor": false,
+      "type": "Circle",
+      "fillStyle": "rgba(0,255,0,0.4)",
+      "id": "ball"
+    },
+    {
+      "x": 348,
+      "y": 383,
+      "radius": 4,
+      "staticBody": true,
+      "sensor": true,
+      "type": "Circle",
+      "id": "goal",
+      "fillStyle": "rgba(255,0,0,0.2)"
+    }
+  ],
+  "joints": [],
+  "canvas": {
+    "height": 440,
+    "width": 700
+  },
+  "backImg": null
+}
   ];
 
   var args = Array.prototype.slice.call(arguments, 1);
