@@ -30,10 +30,11 @@ define([
       var position = im.mouseAction.position;
       if(!im.mouseAction.isPressed() && position){
         var ballPx = scalePoints(ball, ball.scale);
-        var dist = distance(ballPx, position);
+        var dist = distance(im.mouseAction.startPosition, position);
+
         // Hit Ball
         this.ui.ballHit = true;
-        var angle = radiansFromCenter(ballPx, position) + Math.PI;
+        var angle = radiansFromCenter(im.mouseAction.startPosition, position) + Math.PI;
         var impulse = Math.min(dist * IMPULSE_PER_PIXEL, MAX_IMPULSE_PIXELS * IMPULSE_PER_PIXEL);
         console.log('hit', angle, impulse);
         this.box.applyImpulse(ball.id, angle, impulse);

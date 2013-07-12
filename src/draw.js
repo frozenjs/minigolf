@@ -35,11 +35,9 @@ define([
 
     if(im.mouseAction.position){
       var ballPt = scalePoints(ball, ball.scale);
-      var length = Math.min(distance(ballPt, im.mouseAction.position), MAX_IMPULSE_PIXELS);
-      //var length = Math.min(distance(im.mouseAction.startPosition, im.mouseAction.position), MAX_IMPULSE_PIXELS);
+      var length = Math.min(distance(im.mouseAction.startPosition, im.mouseAction.position), MAX_IMPULSE_PIXELS);
       var impPerc = length / MAX_IMPULSE_PIXELS;
-      var angle = radiansFromCenter(ballPt, im.mouseAction.position) + Math.PI;
-      //var angle = radiansFromCenter(im.mouseAction.startPosition, im.mouseAction.position) + Math.PI;
+      var angle = radiansFromCenter(im.mouseAction.startPosition, im.mouseAction.position) + Math.PI;
 
       //end of the arrow head
       var p2 = translatePoints(rotateVector({x: 0, y: impPerc * MAX_IMPULSE_PIXELS / 3 }, angle), ballPt);
