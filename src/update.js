@@ -12,7 +12,7 @@ define([
   var SOUND_IMPULSE_THRESHOLD = 1;
   var SOUND_IMPULSE_MAX = 50;
   var MAX_DISTANCE_FOR_GOAL = 0.4;
-  var ZONE_IMPULSE = 0.2;
+  var ZONE_IMPULSE = 0.2 * 2;
   var SLOWDOWN_PERCENTAGE = 0.8;
 
   return function(millis){
