@@ -1,11 +1,12 @@
 define([
   './Ball',
+  './Hole',
   './levelData',
   'lodash',
   'frozen/box2d/entities',
   'frozen/box2d/joints',
   'frozen/utils/scalePoints'
-], function(Ball, levelData, _, entities, joints, scalePoints){
+], function(Ball, Hole, levelData, _, entities, joints, scalePoints){
 
   'use strict';
 
@@ -30,6 +31,8 @@ define([
       console.log(obj);
       if(obj.id === 'ball'){
         self.addBody(new Ball(obj));
+      } else if(obj.id === 'goal'){
+        self.addBody(new Hole(obj));
       } else {
         var Entity = entities[obj.type];
         if(Entity){

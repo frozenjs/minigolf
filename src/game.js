@@ -5,17 +5,12 @@ define([
   './draw',
   './loadLevel',
   './UI',
-  'dojo/has',
   'frozen/box2d/Box',
   'frozen/box2d/BoxGame',
   'frozen/box2d/listeners/Contact'
-], function(initInput, handleInput, update, draw, loadLevel, UI, has, Box, BoxGame, Contact){
+], function(initInput, handleInput, update, draw, loadLevel, UI, Box, BoxGame, Contact){
 
   'use strict';
-
-  has.add('debug', function(global){
-    return !!global.localStorage.getItem('debug');
-  });
 
   var box = new Box({
     gravityX: 0,
