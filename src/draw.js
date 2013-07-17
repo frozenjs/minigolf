@@ -11,14 +11,19 @@ define([
 
   'use strict';
 
+  has.add('debug', function(global){
+    return !!global.localStorage.getItem('debug');
+  });
+
   // TODO: DRY up
-  var MAX_IMPULSE_PIXELS = 150;
+  var MAX_IMPULSE_PIXELS = 150 * 2;
 
   var MIN_TRANSPARENCY = 0.5;
   var MIN_STROKE_LINE = 2;
 
   return function(context){
     var ball = this.entities.ball;
+    var goal = this.entities.goal;
     var im = this.inputManager;
 
     context.lineWidth = 1;
@@ -30,6 +35,7 @@ define([
       }
     });
 
+    goal.draw(context);
     ball.draw(context);
 
     if(im.mouseAction.position){
