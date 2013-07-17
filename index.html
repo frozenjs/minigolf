@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+<!-- <html manifest="manifest.appcache"> -->
 <html>
   <head>
     <meta charset="utf-8">
     <title>Mini Golf</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="styles/game.css" type="text/css" rel="stylesheet" />
-    <script src="ga.js"></script>
+    <!-- <script src="ga.js"></script> -->
     <script src="dojoConfig.js"></script>
     <script src="deps/Box2d.min.js"></script>
     <script src="dist/game.js"></script>
@@ -21,14 +22,14 @@
     </script>
   </head>
   <body>
+    <span id="install"><a href="#">Install w/ Firefox</a></span>
     <div id="gameArea">
-      <canvas id="canvas" width="700" height="440"></canvas>
+      <canvas id="canvas" width="1500" height="1000"></canvas>
       <div id="status">
         <span id="hole" class="ui"></span>
         <span id="stroke" class="ui"></span>
         <span id="score" class="ui"></span>
         <span id="created-by">Mini Golf created with <a href="http://frozenjs.com">FrozenJS</a></span>
-        <button onclick="navigator.mozApps.install('manifest.webapp')">Install</button>
       </div>
     </div>
   </body>
