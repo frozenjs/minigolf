@@ -23,7 +23,9 @@
       "dcl": "github:uhop/dcl/1.0.2",
       "Box2d.min": "https://box2dweb.googlecode.com/svn/trunk/Box2d.min.js",
       "lodash": "github:bestiejs/lodash/v1.3.1",
-      "hammer/hammer": "github:phated/hammer.js/frozen"
+      "hammer/hammer": "github:phated/hammer.js/frozen",
+      "firefox-install/main": "github:iceddev/firefox-install/0.1.0",
+      "firefox-landscape/main": "github:iceddev/firefox-landscape/0.1.0"
     }
   },
   "dojoBuild": "game.profile.js"

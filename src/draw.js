@@ -24,6 +24,7 @@ define([
   return function(context){
     var ball = this.entities.ball;
     var goal = this.entities.goal;
+    var woodbar = this.entities.woodbar;
     var im = this.inputManager;
 
     context.lineWidth = 1;
@@ -36,6 +37,9 @@ define([
     });
 
     goal.draw(context);
+    if(woodbar){
+      woodbar.draw(context);
+    }
     ball.draw(context);
 
     if(im.mouseAction.position){
