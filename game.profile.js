@@ -69,6 +69,8 @@ var profile = (function(){
       },
       "dist/game": {
         include: [
+          'firefox-install',
+          'firefox-landscape',
           'game'
         ],
         customBase: true,
