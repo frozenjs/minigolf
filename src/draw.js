@@ -14,9 +14,7 @@ define([
     var ball = this.entities.ball;
     var goal = this.entities.goal;
     var woodbar = this.entities.woodbar;
-    var im = this.inputManager;
 
-    context.lineWidth = 1;
     context.drawImage(levelData[this.level].backImg, 0, 0, this.width, this.height);
 
     _.forEach(this.entities, function(entity){
