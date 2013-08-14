@@ -26,6 +26,8 @@ define([
       }
     }
 
+    this.arrow.handleInput(im);
+
     if(ball && (this.ui.scoreTime <= 0)){
       var position = im.mouseAction.position;
       if(!im.mouseAction.isPressed() && position){
