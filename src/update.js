@@ -1,11 +1,12 @@
 define([
   './levelData',
   'lodash',
+  'frozen/utils/scalePoints',
   'frozen/utils/radiansFromCenter',
   'frozen/plugins/loadSound!sounds/clack',
   'frozen/plugins/loadSound!sounds/hole',
   'frozen/plugins/loadSound!sounds/laugh'
-], function(levelData, _, radiansFromCenter, clack, holeSound, laughSound){
+], function(levelData, _, scalePoints, radiansFromCenter, clack, holeSound, laughSound){
 
   'use strict';
 
@@ -19,6 +20,7 @@ define([
     var entities = this.entities;
     var ball = entities.ball;
     var ui = this.ui;
+    var arrow = this.arrow;
     var goal = entities.goal;
     var box = this.box;
     var level = levelData[this.level];
@@ -87,6 +89,8 @@ define([
         });
       }
     }
+
+    arrow.update(scalePoints(ball, ball.scale));
 
     ui.update(millis);
 

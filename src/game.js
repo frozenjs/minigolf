@@ -5,10 +5,11 @@ define([
   './draw',
   './loadLevel',
   './UI',
+  './Arrow',
   'frozen/box2d/Box',
   'frozen/box2d/BoxGame',
   'frozen/box2d/listeners/Contact'
-], function(initInput, handleInput, update, draw, loadLevel, UI, Box, BoxGame, Contact){
+], function(initInput, handleInput, update, draw, loadLevel, UI, Arrow, Box, BoxGame, Contact){
 
   'use strict';
 
@@ -49,6 +50,7 @@ define([
     draw: draw,
     loadLevel: loadLevel,
     ui: new UI(),
+    arrow: new Arrow(),
     level: 0
   });
 
