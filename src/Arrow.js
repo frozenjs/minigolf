@@ -40,8 +40,8 @@ define([
         ctx.rotate(this.angle);
         ctx.translate(-(this.x), -(this.y));
         ctx.drawImage(arrowmid, this.x - (arrowmid.width / 2), this.y + arrowhead.height, arrowmid.width, Math.abs(this.impulseLength));
-        ctx.drawImage(arrowhead, this.x - (arrowhead.width / 2), this.y + (arrowhead.height / 2), arrowhead.width, arrowhead.height);
         ctx.drawImage(arrowback, this.x - (arrowback.width / 2),  this.y + arrowhead.height + this.impulseLength, arrowback.width, arrowback.height);
+        ctx.drawImage(arrowhead, this.x - (arrowhead.width / 2), this.y + (arrowhead.height / 2), arrowhead.width, arrowhead.height);
         ctx.restore();
       }
     }
