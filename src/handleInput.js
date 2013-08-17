@@ -14,7 +14,7 @@ define([
   return function(im){
     var ball = this.entities.ball;
 
-    if(has('debug')){
+    // if(has('debug')){
       if(im.keyActions[keys.RIGHT_ARROW].getAmount()){
         this.level++;
         this.loadLevel(this.level);
@@ -24,7 +24,7 @@ define([
         this.level--;
         this.loadLevel(this.level);
       }
-    }
+    // }
 
     this.arrow.handleInput(im);
 
