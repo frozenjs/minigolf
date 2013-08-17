@@ -6,10 +6,10 @@ define([
   'use strict';
 
   return function(im){
-    if(has('debug')){
+    // if(has('debug')){
       im.addKeyAction(keys.RIGHT_ARROW, true);
       im.addKeyAction(keys.LEFT_ARROW, true);
-    }
+    // }
   };
 
 });
