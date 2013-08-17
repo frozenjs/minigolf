@@ -2129,13 +2129,14 @@ define([
   'use strict';
 
   return function(im){
-    if( 0 ){
+    // if( 0 ){
       im.addKeyAction(keys.RIGHT_ARROW, true);
       im.addKeyAction(keys.LEFT_ARROW, true);
-    }
+    // }
   };
 
 });
+
 },
 'dojo/has':function(){
 define(["require", "module"], function(require, module){
