@@ -2975,7 +2975,7 @@ define([
   return function(im){
     var ball = this.entities.ball;
 
-    if( 0 ){
+    // if( 0 ){
       if(im.keyActions[keys.RIGHT_ARROW].getAmount()){
         this.level++;
         this.loadLevel(this.level);
@@ -2985,7 +2985,7 @@ define([
         this.level--;
         this.loadLevel(this.level);
       }
-    }
+    // }
 
     this.arrow.handleInput(im);
 
