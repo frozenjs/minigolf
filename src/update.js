@@ -75,6 +75,7 @@ define([
             box.setAngularVelocity(ball.id, 0);
             ui.setTime('waterTime');
           }else if(entity.sand){
+            // TODO: can we apply friction to the ball instead of this?
             box.setLinearVelocity(ball.id, ball.linearVelocity.x * SLOWDOWN_PERCENTAGE, ball.linearVelocity.y * SLOWDOWN_PERCENTAGE);
             box.setAngularVelocity(ball.id,  ball.angularVelocity * SLOWDOWN_PERCENTAGE);
           } else if(entity.type === 'Rectangle' || entity.type === 'Polygon'){
