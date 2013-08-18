@@ -8739,6 +8739,7 @@ define([
             box.setAngularVelocity(ball.id, 0);
             ui.setTime('waterTime');
           }else if(entity.sand){
+            // TODO: can we apply friction to the ball instead of this?
             box.setLinearVelocity(ball.id, ball.linearVelocity.x * SLOWDOWN_PERCENTAGE, ball.linearVelocity.y * SLOWDOWN_PERCENTAGE);
             box.setAngularVelocity(ball.id,  ball.angularVelocity * SLOWDOWN_PERCENTAGE);
           } else if(entity.type === 'Rectangle' || entity.type === 'Polygon'){
@@ -8785,8 +8786,9 @@ define([
   'frozen/plugins/loadImage!images/hole13.png',
   'frozen/plugins/loadImage!images/hole14.png',
   'frozen/plugins/loadImage!images/hole15.png',
-  'frozen/plugins/loadImage!images/hole16.png'
-], function(_, hole1, hole2, hole3, hole4, hole5, hole6, hole7, hole8, hole9, hole10, hole11, hole12, hole13, hole14, hole15, hole16){
+  'frozen/plugins/loadImage!images/hole16.png',
+  'frozen/plugins/loadImage!images/hole17.png'
+], function(_){
 
   'use strict';
 
@@ -12935,6 +12937,303 @@ define([
           "id": 22,
           "impulseAngle": 180,
           "impulsePercentage": 0.8
+        }
+      ],
+      "joints": [],
+      "canvas": {
+        "height": 1000,
+        "width": 1500
+      }
+    },
+    // Level 17
+    {
+      "entities": [
+        {
+          "x": 587,
+          "y": 488,
+          "radius": 11.5,
+          "staticBody": false,
+          "sensor": false,
+          "type": "Circle",
+          "fillStyle": "rgba(0,255,0,0.4)",
+          "id": "ball"
+        },
+        {
+          "x": 921,
+          "y": 513,
+          "radius": 6,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": "goal"
+        },
+        {
+          "x": 511.5,
+          "y": 487.5,
+          "halfWidth": 37.5,
+          "halfHeight": 112.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 0
+        },
+        {
+          "x": 625.5,
+          "y": 412.5,
+          "halfWidth": 150.5,
+          "halfHeight": 36.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 1
+        },
+        {
+          "x": 900.5,
+          "y": 438.5,
+          "halfWidth": 149.5,
+          "halfHeight": 35.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 2
+        },
+        {
+          "x": 1012.5,
+          "y": 512.5,
+          "halfWidth": 36.5,
+          "halfHeight": 111.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 3
+        },
+        {
+          "x": 587.5,
+          "y": 563.5,
+          "halfWidth": 112.5,
+          "halfHeight": 37.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 4
+        },
+        {
+          "x": 863.5,
+          "y": 588,
+          "halfWidth": 185.5,
+          "halfHeight": 37,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 5
+        },
+        {
+          "points": [
+            {
+              "x": 14,
+              "y": 7
+            },
+            {
+              "x": -14,
+              "y": 7
+            },
+            {
+              "x": -14,
+              "y": -21
+            }
+          ],
+          "x": 561,
+          "y": 519,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 6
+        },
+        {
+          "points": [
+            {
+              "x": -7,
+              "y": -14
+            },
+            {
+              "x": 20,
+              "y": -14
+            },
+            {
+              "x": -7,
+              "y": 14
+            }
+          ],
+          "x": 556,
+          "y": 463,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 7
+        },
+        {
+          "points": [
+            {
+              "x": -8,
+              "y": -17
+            },
+            {
+              "x": 17,
+              "y": 8
+            },
+            {
+              "x": -9,
+              "y": 9
+            }
+          ],
+          "x": 708,
+          "y": 543,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 8
+        },
+        {
+          "points": [
+            {
+              "x": -13,
+              "y": -6
+            },
+            {
+              "x": 13,
+              "y": -6
+            },
+            {
+              "x": 13,
+              "y": 19
+            }
+          ],
+          "x": 738,
+          "y": 455.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 9
+        },
+        {
+          "points": [
+            {
+              "x": -14,
+              "y": 7
+            },
+            {
+              "x": 14,
+              "y": -20
+            },
+            {
+              "x": 14,
+              "y": 7
+            }
+          ],
+          "x": 963,
+          "y": 544,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 10
+        },
+        {
+          "points": [
+            {
+              "x": 9,
+              "y": -9
+            },
+            {
+              "x": 9,
+              "y": 18
+            },
+            {
+              "x": -18,
+              "y": -9
+            }
+          ],
+          "x": 967,
+          "y": 484,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Polygon",
+          "id": 11
+        },
+        {
+          "x": 712,
+          "y": 503.5,
+          "halfWidth": 11,
+          "halfHeight": 74.5,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Rectangle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 13,
+          "sand": true
+        },
+        {
+          "x": 787.5,
+          "y": 507,
+          "halfWidth": 10.5,
+          "halfHeight": 76,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Rectangle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 14,
+          "sand": true
+        },
+        {
+          "x": 862.5,
+          "y": 507.5,
+          "halfWidth": 10.5,
+          "halfHeight": 74.5,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Rectangle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 15,
+          "sand": true
+        },
+        {
+          "x": 662,
+          "y": 494,
+          "halfWidth": 37,
+          "halfHeight": 51,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Rectangle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 16,
+          "impulseAngle": 90,
+          "impulsePercentage": 0.4
+        },
+        {
+          "x": 750.5,
+          "y": 507.5,
+          "halfWidth": 25.5,
+          "halfHeight": 75.5,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Rectangle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 17,
+          "impulseAngle": 90,
+          "impulsePercentage": 0.4
+        },
+        {
+          "x": 825,
+          "y": 507,
+          "halfWidth": 25.5,
+          "halfHeight": 75,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Rectangle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 18,
+          "impulseAngle": 90,
+          "impulsePercentage": 0.4
         }
       ],
       "joints": [],
