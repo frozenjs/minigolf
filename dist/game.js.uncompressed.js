@@ -8792,7 +8792,8 @@ define([
   'frozen/plugins/loadImage!images/hole17.png',
   'frozen/plugins/loadImage!images/hole18.png',
   'frozen/plugins/loadImage!images/hole19.png',
-  'frozen/plugins/loadImage!images/hole20.png'
+  'frozen/plugins/loadImage!images/hole20.png',
+  'frozen/plugins/loadImage!images/hole21.png'
 ], function(_){
 
   'use strict';
@@ -15017,6 +15018,647 @@ define([
           "type": "Polygon",
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 23,
+          "sand": true
+        }
+      ],
+      "joints": [],
+      "canvas": {
+        "height": 1000,
+        "width": 1500
+      }
+    },
+    // Level 21
+    {
+      "entities": [
+        {
+          "x": 61,
+          "y": 477.5,
+          "halfWidth": 38,
+          "halfHeight": 382.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 0
+        },
+        {
+          "x": 750,
+          "y": 128.5,
+          "halfWidth": 736,
+          "halfHeight": 45.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 1
+        },
+        {
+          "x": 753.5,
+          "y": 864,
+          "halfWidth": 729.5,
+          "halfHeight": 38,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 2
+        },
+        {
+          "x": 1438,
+          "y": 494,
+          "halfWidth": 37.5,
+          "halfHeight": 403.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 3
+        },
+        {
+          "x": 275,
+          "y": 738,
+          "radius": 11.5,
+          "staticBody": false,
+          "sensor": false,
+          "type": "Circle",
+          "fillStyle": "rgba(0,255,0,0.4)",
+          "id": "ball"
+        },
+        {
+          "x": 1225,
+          "y": 738,
+          "radius": 6,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": "goal"
+        },
+        {
+          "x": 272.5,
+          "y": 228,
+          "halfWidth": 251.5,
+          "halfHeight": 146,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 4
+        },
+        {
+          "x": 1225.5,
+          "y": 230,
+          "halfWidth": 249.5,
+          "halfHeight": 144,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 5
+        },
+        {
+          "x": 750,
+          "y": 763,
+          "halfWidth": 299,
+          "halfHeight": 137,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 6
+        },
+        {
+          "x": 750.5,
+          "y": 273.5,
+          "halfWidth": 225.5,
+          "halfHeight": 98.5,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Rectangle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 7,
+          "impulseAngle": 180,
+          "impulsePercentage": 1
+        },
+        {
+          "points": [
+            {
+              "x": -11.5,
+              "y": -27.5
+            },
+            {
+              "x": -2,
+              "y": -36
+            },
+            {
+              "x": 13.5,
+              "y": -21.5
+            },
+            {
+              "x": 13.5,
+              "y": 21.5
+            },
+            {
+              "x": -2,
+              "y": 36
+            },
+            {
+              "x": -11.5,
+              "y": 27.5
+            }
+          ],
+          "x": 588,
+          "y": 550,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 8,
+          "impulseAngle": 90,
+          "impulsePercentage": 0.4
+        },
+        {
+          "points": [
+            {
+              "x": -11.5,
+              "y": -27.5
+            },
+            {
+              "x": -2,
+              "y": -36
+            },
+            {
+              "x": 13.5,
+              "y": -21.5
+            },
+            {
+              "x": 13.5,
+              "y": 21.5
+            },
+            {
+              "x": -2,
+              "y": 36
+            },
+            {
+              "x": -11.5,
+              "y": 27.5
+            }
+          ],
+          "x": 838,
+          "y": 550,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 9,
+          "impulseAngle": 90,
+          "impulsePercentage": 0.4
+        },
+        {
+          "points": [
+            {
+              "x": -11.5,
+              "y": -27.5
+            },
+            {
+              "x": -2,
+              "y": -36
+            },
+            {
+              "x": 13.5,
+              "y": -21.5
+            },
+            {
+              "x": 13.5,
+              "y": 21.5
+            },
+            {
+              "x": -2,
+              "y": 36
+            },
+            {
+              "x": -11.5,
+              "y": 27.5
+            }
+          ],
+          "x": 690,
+          "y": 500,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 10,
+          "impulseAngle": 90,
+          "impulsePercentage": 0.4
+        },
+        {
+          "points": [
+            {
+              "x": 11.5,
+              "y": -27.5
+            },
+            {
+              "x": 2,
+              "y": -36
+            },
+            {
+              "x": -13.5,
+              "y": -21.5
+            },
+            {
+              "x": -13.5,
+              "y": 21.5
+            },
+            {
+              "x": 2,
+              "y": 36
+            },
+            {
+              "x": 11.5,
+              "y": 27.5
+            }
+          ],
+          "x": 663,
+          "y": 551,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 11,
+          "impulseAngle": 270,
+          "impulsePercentage": 0.4
+        },
+        {
+          "points": [
+            {
+              "x": 11.5,
+              "y": -27.5
+            },
+            {
+              "x": 2,
+              "y": -36
+            },
+            {
+              "x": -13.5,
+              "y": -21.5
+            },
+            {
+              "x": -13.5,
+              "y": 21.5
+            },
+            {
+              "x": 2,
+              "y": 36
+            },
+            {
+              "x": 11.5,
+              "y": 27.5
+            }
+          ],
+          "x": 913,
+          "y": 551,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 12,
+          "impulseAngle": 270,
+          "impulsePercentage": 0.4
+        },
+        {
+          "points": [
+            {
+              "x": 11.5,
+              "y": -27.5
+            },
+            {
+              "x": 2,
+              "y": -36
+            },
+            {
+              "x": -13.5,
+              "y": -21.5
+            },
+            {
+              "x": -13.5,
+              "y": 21.5
+            },
+            {
+              "x": 2,
+              "y": 36
+            },
+            {
+              "x": 11.5,
+              "y": 27.5
+            }
+          ],
+          "x": 813,
+          "y": 499,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 13,
+          "impulseAngle": 270,
+          "impulsePercentage": 0.4
+        },
+        {
+          "points": [
+            {
+              "x": -21,
+              "y": -13
+            },
+            {
+              "x": 31,
+              "y": -13
+            },
+            {
+              "x": 45,
+              "y": 0
+            },
+            {
+              "x": 29,
+              "y": 13
+            },
+            {
+              "x": -17,
+              "y": 13
+            },
+            {
+              "x": -34,
+              "y": -1
+            }
+          ],
+          "x": 620,
+          "y": 515,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 14,
+          "impulseAngle": 180,
+          "impulsePercentage": 0.4
+        },
+        {
+          "points": [
+            {
+              "x": -21,
+              "y": -13
+            },
+            {
+              "x": 31,
+              "y": -13
+            },
+            {
+              "x": 45,
+              "y": 0
+            },
+            {
+              "x": 29,
+              "y": 13
+            },
+            {
+              "x": -17,
+              "y": 13
+            },
+            {
+              "x": -34,
+              "y": -1
+            }
+          ],
+          "x": 870,
+          "y": 515,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 15,
+          "impulseAngle": 180,
+          "impulsePercentage": 0.4
+        },
+        {
+          "points": [
+            {
+              "x": -21,
+              "y": 13
+            },
+            {
+              "x": 31,
+              "y": 13
+            },
+            {
+              "x": 45,
+              "y": 0
+            },
+            {
+              "x": 29,
+              "y": -13
+            },
+            {
+              "x": -17,
+              "y": -13
+            },
+            {
+              "x": -34,
+              "y": 1
+            }
+          ],
+          "x": 620,
+          "y": 585,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 16,
+          "impulseAngle": 0,
+          "impulsePercentage": 0.4
+        },
+        {
+          "points": [
+            {
+              "x": -21,
+              "y": 13
+            },
+            {
+              "x": 31,
+              "y": 13
+            },
+            {
+              "x": 45,
+              "y": 0
+            },
+            {
+              "x": 29,
+              "y": -13
+            },
+            {
+              "x": -17,
+              "y": -13
+            },
+            {
+              "x": -34,
+              "y": 1
+            }
+          ],
+          "x": 870,
+          "y": 585,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 17,
+          "impulseAngle": 0,
+          "impulsePercentage": 0.4
+        },
+        {
+          "points": [
+            {
+              "x": -49,
+              "y": -13
+            },
+            {
+              "x": 49,
+              "y": -13
+            },
+            {
+              "x": 65,
+              "y": -1
+            },
+            {
+              "x": 49,
+              "y": 13
+            },
+            {
+              "x": -49,
+              "y": 13
+            },
+            {
+              "x": -62,
+              "y": -1
+            }
+          ],
+          "x": 751,
+          "y": 464,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 18,
+          "impulseAngle": 180,
+          "impulsePercentage": 0.4
+        },
+        {
+          "points": [
+            {
+              "x": -49,
+              "y": 13
+            },
+            {
+              "x": 49,
+              "y": 13
+            },
+            {
+              "x": 65,
+              "y": 1
+            },
+            {
+              "x": 49,
+              "y": -13
+            },
+            {
+              "x": -49,
+              "y": -13
+            },
+            {
+              "x": -62,
+              "y": 1
+            }
+          ],
+          "x": 750,
+          "y": 535,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 19,
+          "impulseAngle": 0,
+          "impulsePercentage": 0.4
+        },
+        {
+          "x": 625,
+          "y": 550.5,
+          "halfWidth": 22,
+          "halfHeight": 20.5,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Rectangle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 20,
+          "sand": true
+        },
+        {
+          "x": 750.5,
+          "y": 500,
+          "halfWidth": 46.5,
+          "halfHeight": 21,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Rectangle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 21,
+          "sand": true
+        },
+        {
+          "x": 875.5,
+          "y": 550.5,
+          "halfWidth": 22.5,
+          "halfHeight": 20.5,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Rectangle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 22,
+          "sand": true
+        },
+        {
+          "points": [
+            {
+              "x": -42.5,
+              "y": -88.5
+            },
+            {
+              "x": 133.5,
+              "y": -88.5
+            },
+            {
+              "x": -42.5,
+              "y": 88.5
+            }
+          ],
+          "x": 142.5,
+          "y": 463.5,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 23,
+          "sand": true
+        },
+        {
+          "points": [
+            {
+              "x": 42.5,
+              "y": -88.5
+            },
+            {
+              "x": -133.5,
+              "y": -88.5
+            },
+            {
+              "x": 42.5,
+              "y": 88.5
+            }
+          ],
+          "x": 1358,
+          "y": 462,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 24,
           "sand": true
         }
       ],
