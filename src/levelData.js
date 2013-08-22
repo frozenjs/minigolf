@@ -7249,6 +7249,16 @@ define([
           "id": 15,
           "impulseAngle": 0,
           "impulsePercentage": 1
+        },
+        {
+          "x": 537,
+          "y": 223,
+          "radius": 12.5,
+          "staticBody": false,
+          "sensor": false,
+          "type": "Circle",
+          "fillStyle": "rgba(0,255,0,0.4)",
+          "id": "woodball"
         }
       ],
       "joints": [],

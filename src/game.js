@@ -18,21 +18,28 @@ define([
     gravityY: 0,
     contactListener: new Contact({
       beginContact: function(idA, idB, contact){
-        if(idA !== 'ball' && idB !== 'ball'){
+        console.log(contact.IsSensor());
+        if(!contact.IsSensor()){
           return;
         }
-        var id = idA !== 'ball' ? idA : idB;
-        if(game.entities[id].sensor){
-          game.entities.ball.touching[id] = true;
+        var entityA = game.entities[idA];
+        var entityB = game.entities[idB];
+        if(entityA.sensor){
+          entityB.touching[entityA.id] = true;
+        } else {
+          entityA.touching[entityB.id] = true;
         }
       },
       endContact: function(idA, idB, contact){
-        if(idA !== 'ball' && idB !== 'ball'){
+        if(!contact.IsSensor()){
           return;
         }
-        var id = idA !== 'ball' ? idA : idB;
-        if(game.entities[id].sensor){
-          game.entities.ball.touching[id] = false;
+        var entityA = game.entities[idA];
+        var entityB = game.entities[idB];
+        if(entityA.sensor){
+          entityB.touching[entityA.id] = false;
+        } else {
+          entityA.touching[entityB.id] = false;
         }
       }
     })

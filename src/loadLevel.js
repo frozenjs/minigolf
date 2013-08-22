@@ -1,5 +1,6 @@
 define([
   './Ball',
+  './Woodball',
   './Hole',
   './Woodbar',
   './levelData',
@@ -7,7 +8,7 @@ define([
   'frozen/box2d/entities',
   'frozen/box2d/joints',
   'frozen/utils/scalePoints'
-], function(Ball, Hole, Woodbar, levelData, _, entities, joints, scalePoints){
+], function(Ball, Woodball, Hole, Woodbar, levelData, _, entities, joints, scalePoints){
 
   'use strict';
 
@@ -32,6 +33,8 @@ define([
       console.log(obj);
       if(obj.id === 'ball'){
         self.addBody(new Ball(obj));
+      } else if(obj.id === 'woodball'){
+        self.addBody(new Woodball(obj));
       } else if(obj.id === 'goal'){
         self.addBody(new Hole(obj));
       } else if(obj.id === 'woodbar'){
