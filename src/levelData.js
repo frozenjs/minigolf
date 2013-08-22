@@ -20,7 +20,8 @@ define([
   'frozen/plugins/loadImage!images/hole18.png',
   'frozen/plugins/loadImage!images/hole19.png',
   'frozen/plugins/loadImage!images/hole20.png',
-  'frozen/plugins/loadImage!images/hole21.png'
+  'frozen/plugins/loadImage!images/hole21.png',
+  'frozen/plugins/loadImage!images/hole22.png'
 ], function(_){
 
   'use strict';
@@ -1714,6 +1715,19 @@ define([
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 9,
           "water": true
+        },
+        {
+          "x": 899,
+          "y": 500.5,
+          "halfWidth": 73,
+          "halfHeight": 324.5,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Rectangle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 10,
+          "impulseAngle": 270,
+          "impulsePercentage": 0.6
         }
       ],
       "joints": [],
@@ -5782,6 +5796,56 @@ define([
           "id": 20,
           "impulseAngle": 270,
           "impulsePercentage": 0.5
+        },
+        {
+          "x": 750,
+          "y": 789,
+          "halfWidth": 299,
+          "halfHeight": 38,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 21
+        },
+        {
+          "x": 563,
+          "y": 562,
+          "halfWidth": 112,
+          "halfHeight": 37,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 22
+        },
+        {
+          "x": 937.5,
+          "y": 562,
+          "halfWidth": 111.5,
+          "halfHeight": 37,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 23
+        },
+        {
+          "x": 637.5,
+          "y": 312,
+          "halfWidth": 36.5,
+          "halfHeight": 137,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 24
+        },
+        {
+          "x": 863.5,
+          "y": 312.5,
+          "halfWidth": 36.5,
+          "halfHeight": 136.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 25
         }
       ],
       "joints": [],
@@ -5789,7 +5853,7 @@ define([
         "height": 1000,
         "width": 1500
       }
-    },
+      },
     // Level 20
     {
       "entities": [
@@ -6044,8 +6108,8 @@ define([
           "impulsePercentage": 1
         },
         {
-          "x": 489,
-          "y": 500.5,
+          "x": 514,
+          "y": 500,
           "halfWidth": 12,
           "halfHeight": 99.5,
           "staticBody": true,
@@ -6144,8 +6208,8 @@ define([
           "impulsePercentage": 1
         },
         {
-          "x": 298.5,
-          "y": 261.5,
+          "x": 173,
+          "y": 261,
           "halfWidth": 198.5,
           "halfHeight": 85.5,
           "staticBody": true,
@@ -6156,8 +6220,8 @@ define([
           "sand": true
         },
         {
-          "x": 300,
-          "y": 739.5,
+          "x": 172,
+          "y": 739,
           "halfWidth": 200,
           "halfHeight": 84.5,
           "staticBody": true,
@@ -6887,6 +6951,304 @@ define([
           "fillStyle": "rgba(255,0,0,0.2)",
           "id": 24,
           "sand": true
+        }
+      ],
+      "joints": [],
+      "canvas": {
+        "height": 1000,
+        "width": 1500
+      }
+    },
+    // Level 22
+    {
+      "entities": [
+        {
+          "x": 61,
+          "y": 477.5,
+          "halfWidth": 38,
+          "halfHeight": 382.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 0
+        },
+        {
+          "x": 750,
+          "y": 128.5,
+          "halfWidth": 736,
+          "halfHeight": 45.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 1
+        },
+        {
+          "x": 753.5,
+          "y": 864,
+          "halfWidth": 729.5,
+          "halfHeight": 38,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 2
+        },
+        {
+          "x": 1438,
+          "y": 494,
+          "halfWidth": 37.5,
+          "halfHeight": 403.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 3
+        },
+        {
+          "x": 137,
+          "y": 500,
+          "radius": 11.5,
+          "staticBody": false,
+          "sensor": false,
+          "type": "Circle",
+          "fillStyle": "rgba(0,255,0,0.4)",
+          "id": "ball"
+        },
+        {
+          "x": 1263,
+          "y": 500,
+          "radius": 6,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Circle",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": "goal"
+        },
+        {
+          "x": 261.5,
+          "y": 283,
+          "halfWidth": 237.5,
+          "halfHeight": 191,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 4
+        },
+        {
+          "x": 262,
+          "y": 714,
+          "halfWidth": 237,
+          "halfHeight": 188,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 5
+        },
+        {
+          "x": 1238,
+          "y": 280,
+          "halfWidth": 237,
+          "halfHeight": 194,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 6
+        },
+        {
+          "x": 1237.5,
+          "y": 713.5,
+          "halfWidth": 236.5,
+          "halfHeight": 187.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 7
+        },
+        {
+          "x": 750,
+          "y": 279,
+          "halfWidth": 174,
+          "halfHeight": 195,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 8
+        },
+        {
+          "x": 749.5,
+          "y": 713.5,
+          "halfWidth": 174.5,
+          "halfHeight": 187.5,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 9
+        },
+        {
+          "x": 963,
+          "y": 363,
+          "halfWidth": 111,
+          "halfHeight": 36,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 10
+        },
+        {
+          "x": 962.5,
+          "y": 638,
+          "halfWidth": 111.5,
+          "halfHeight": 37,
+          "staticBody": true,
+          "sensor": false,
+          "type": "Rectangle",
+          "id": 11
+        },
+        {
+          "points": [
+            {
+              "x": 85,
+              "y": -200
+            },
+            {
+              "x": 87,
+              "y": 76
+            },
+            {
+              "x": 36,
+              "y": 125
+            },
+            {
+              "x": -36,
+              "y": 125
+            },
+            {
+              "x": -87,
+              "y": 76
+            },
+            {
+              "x": -85,
+              "y": -200
+            }
+          ],
+          "x": 537,
+          "y": 376,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 12,
+          "impulseAngle": 180,
+          "impulsePercentage": 3
+        },
+        {
+          "points": [
+            {
+              "x": 85,
+              "y": 200
+            },
+            {
+              "x": 87,
+              "y": -76
+            },
+            {
+              "x": 36,
+              "y": -125
+            },
+            {
+              "x": -36,
+              "y": -125
+            },
+            {
+              "x": -87,
+              "y": -76
+            },
+            {
+              "x": -85,
+              "y": 200
+            }
+          ],
+          "x": 537,
+          "y": 627,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 13,
+          "impulseAngle": 0,
+          "impulsePercentage": 3
+        },
+        {
+          "points": [
+            {
+              "x": 85,
+              "y": -200
+            },
+            {
+              "x": 87,
+              "y": 76
+            },
+            {
+              "x": 36,
+              "y": 125
+            },
+            {
+              "x": -36,
+              "y": 125
+            },
+            {
+              "x": -87,
+              "y": 76
+            },
+            {
+              "x": -85,
+              "y": -200
+            }
+          ],
+          "x": 962,
+          "y": 376,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 14,
+          "impulseAngle": 180,
+          "impulsePercentage": 1
+        },
+        {
+          "points": [
+            {
+              "x": 85,
+              "y": 200
+            },
+            {
+              "x": 87,
+              "y": -76
+            },
+            {
+              "x": 36,
+              "y": -125
+            },
+            {
+              "x": -36,
+              "y": -125
+            },
+            {
+              "x": -87,
+              "y": -76
+            },
+            {
+              "x": -85,
+              "y": 200
+            }
+          ],
+          "x": 962,
+          "y": 627,
+          "staticBody": true,
+          "sensor": true,
+          "type": "Polygon",
+          "fillStyle": "rgba(255,0,0,0.2)",
+          "id": 15,
+          "impulseAngle": 0,
+          "impulsePercentage": 1
         }
       ],
       "joints": [],
