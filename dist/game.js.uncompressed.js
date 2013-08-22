@@ -2073,21 +2073,28 @@ define([
     gravityY: 0,
     contactListener: new Contact({
       beginContact: function(idA, idB, contact){
-        if(idA !== 'ball' && idB !== 'ball'){
+        console.log(contact.IsSensor());
+        if(!contact.IsSensor()){
           return;
         }
-        var id = idA !== 'ball' ? idA : idB;
-        if(game.entities[id].sensor){
-          game.entities.ball.touching[id] = true;
+        var entityA = game.entities[idA];
+        var entityB = game.entities[idB];
+        if(entityA.sensor){
+          entityB.touching[entityA.id] = true;
+        } else {
+          entityA.touching[entityB.id] = true;
         }
       },
       endContact: function(idA, idB, contact){
-        if(idA !== 'ball' && idB !== 'ball'){
+        if(!contact.IsSensor()){
           return;
         }
-        var id = idA !== 'ball' ? idA : idB;
-        if(game.entities[id].sensor){
-          game.entities.ball.touching[id] = false;
+        var entityA = game.entities[idA];
+        var entityB = game.entities[idB];
+        if(entityA.sensor){
+          entityB.touching[entityA.id] = false;
+        } else {
+          entityA.touching[entityB.id] = false;
         }
       }
     })
@@ -8709,6 +8716,7 @@ define([
       }
 
       if(ball.touching.goal){
+        console.log(ball.touching);
         var velocity = Math.sqrt(ball.linearVelocity.x * ball.linearVelocity.x + ball.linearVelocity.y * ball.linearVelocity.y);
         console.log('goal', velocity);
         if(velocity < level.maxGoalVelocity){
@@ -8727,32 +8735,40 @@ define([
           ui.setTime('messageTime');
         }
       } else if(!safe){
-        _.forEach(ball.touching, function(touched, id){
-          if(!touched){
+        _.forEach(this.entities, function(entity){
+          if(entity.staticBody){
             return;
           }
-          var entity = entities[id];
-          if(entity.water){
-            var start = _.find(level.entities, { id: 'ball' });
-            box.setPosition(ball.id, start.x / box.scale, start.y / box.scale);
-            box.setLinearVelocity(ball.id, 0, 0);
-            box.setAngularVelocity(ball.id, 0);
-            ui.setTime('waterTime');
-            // exit early so other modifiers don't take effect
-            return false;
-          }else if(entity.sand){
-            // TODO: can we apply friction to the ball instead of this?
-            box.setLinearVelocity(ball.id, ball.linearVelocity.x * SLOWDOWN_PERCENTAGE, ball.linearVelocity.y * SLOWDOWN_PERCENTAGE);
-            box.setAngularVelocity(ball.id,  ball.angularVelocity * SLOWDOWN_PERCENTAGE);
-          } else if(entity.type === 'Rectangle' || entity.type === 'Polygon'){
-            box.applyImpulseDegrees(ball.id, entity.impulseAngle, ZONE_IMPULSE * entity.impulsePercentage);
-          } else {
-            if(entity.impulseInward){
-              box.applyImpulse(ball.id, radiansFromCenter(entity, ball) + Math.PI, ZONE_IMPULSE * entity.impulsePercentage);
-            } else {
-              box.applyImpulse(ball.id, radiansFromCenter(entity, ball), ZONE_IMPULSE * entity.impulsePercentage);
+
+          _.forEach(entity.touching, function(touched, id){
+            var sensor = entities[id];
+            if(!touched){
+              return;
             }
-          }
+
+            if(entity.id === 'ball' && sensor.water){
+              var start = _.find(level.entities, { id: 'ball' });
+              box.setPosition(ball.id, start.x / box.scale, start.y / box.scale);
+              box.setLinearVelocity(ball.id, 0, 0);
+              box.setAngularVelocity(ball.id, 0);
+              ui.setTime('waterTime');
+              // exit early so other modifiers don't take effect
+              return false;
+            } else if(entity.id === 'ball' && sensor.sand){
+              // TODO: can we apply friction to the ball instead of this?
+              box.setLinearVelocity(ball.id, ball.linearVelocity.x * SLOWDOWN_PERCENTAGE, ball.linearVelocity.y * SLOWDOWN_PERCENTAGE);
+              box.setAngularVelocity(ball.id,  ball.angularVelocity * SLOWDOWN_PERCENTAGE);
+            } else if(sensor.type === 'Rectangle' || sensor.type === 'Polygon'){
+              box.applyImpulseDegrees(entity.id, sensor.impulseAngle, ZONE_IMPULSE * sensor.impulsePercentage);
+            } else {
+              if(sensor.impulseInward){
+                box.applyImpulse(entity.id, radiansFromCenter(sensor, entity) + Math.PI, ZONE_IMPULSE * sensor.impulsePercentage);
+              } else {
+                box.applyImpulse(entity.id, radiansFromCenter(sensor, entity), ZONE_IMPULSE * sensor.impulsePercentage);
+              }
+            }
+
+          });
         });
       }
     }
@@ -16022,6 +16038,16 @@ define([
           "id": 15,
           "impulseAngle": 0,
           "impulsePercentage": 1
+        },
+        {
+          "x": 537,
+          "y": 223,
+          "radius": 12.5,
+          "staticBody": false,
+          "sensor": false,
+          "type": "Circle",
+          "fillStyle": "rgba(0,255,0,0.4)",
+          "id": "woodball"
         }
       ],
       "joints": [],
@@ -17846,6 +17872,7 @@ define([
 'game/loadLevel':function(){
 define([
   './Ball',
+  './Woodball',
   './Hole',
   './Woodbar',
   './levelData',
@@ -17853,7 +17880,7 @@ define([
   'frozen/box2d/entities',
   'frozen/box2d/joints',
   'frozen/utils/scalePoints'
-], function(Ball, Hole, Woodbar, levelData, _, entities, joints, scalePoints){
+], function(Ball, Woodball, Hole, Woodbar, levelData, _, entities, joints, scalePoints){
 
   'use strict';
 
@@ -17878,6 +17905,8 @@ define([
       console.log(obj);
       if(obj.id === 'ball'){
         self.addBody(new Ball(obj));
+      } else if(obj.id === 'woodball'){
+        self.addBody(new Woodball(obj));
       } else if(obj.id === 'goal'){
         self.addBody(new Hole(obj));
       } else if(obj.id === 'woodbar'){
@@ -17901,6 +17930,7 @@ define([
   };
 
 });
+
 },
 'game/Ball':function(){
 define([
@@ -18250,6 +18280,25 @@ define([
   });
 
 });
+},
+'game/Woodball':function(){
+define([
+  'dcl',
+  './Ball',
+  'frozen/plugins/loadImage!images/woodball.png'
+], function(dcl, Ball, woodball){
+
+  'use strict';
+
+  return dcl(Ball, {
+    id: 'woodball',
+    img: woodball,
+    radius: 12.5,
+    touching: {}
+  });
+
+});
+
 },
 'game/Hole':function(){
 define([
