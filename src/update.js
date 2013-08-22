@@ -45,6 +45,7 @@ define([
       }
 
       if(ball.touching.goal){
+        console.log(ball.touching);
         var velocity = Math.sqrt(ball.linearVelocity.x * ball.linearVelocity.x + ball.linearVelocity.y * ball.linearVelocity.y);
         console.log('goal', velocity);
         if(velocity < level.maxGoalVelocity){
@@ -63,32 +64,40 @@ define([
           ui.setTime('messageTime');
         }
       } else if(!safe){
-        _.forEach(ball.touching, function(touched, id){
-          if(!touched){
+        _.forEach(this.entities, function(entity){
+          if(entity.staticBody){
             return;
           }
-          var entity = entities[id];
-          if(entity.water){
-            var start = _.find(level.entities, { id: 'ball' });
-            box.setPosition(ball.id, start.x / box.scale, start.y / box.scale);
-            box.setLinearVelocity(ball.id, 0, 0);
-            box.setAngularVelocity(ball.id, 0);
-            ui.setTime('waterTime');
-            // exit early so other modifiers don't take effect
-            return false;
-          }else if(entity.sand){
-            // TODO: can we apply friction to the ball instead of this?
-            box.setLinearVelocity(ball.id, ball.linearVelocity.x * SLOWDOWN_PERCENTAGE, ball.linearVelocity.y * SLOWDOWN_PERCENTAGE);
-            box.setAngularVelocity(ball.id,  ball.angularVelocity * SLOWDOWN_PERCENTAGE);
-          } else if(entity.type === 'Rectangle' || entity.type === 'Polygon'){
-            box.applyImpulseDegrees(ball.id, entity.impulseAngle, ZONE_IMPULSE * entity.impulsePercentage);
-          } else {
-            if(entity.impulseInward){
-              box.applyImpulse(ball.id, radiansFromCenter(entity, ball) + Math.PI, ZONE_IMPULSE * entity.impulsePercentage);
-            } else {
-              box.applyImpulse(ball.id, radiansFromCenter(entity, ball), ZONE_IMPULSE * entity.impulsePercentage);
+
+          _.forEach(entity.touching, function(touched, id){
+            var sensor = entities[id];
+            if(!touched){
+              return;
             }
-          }
+
+            if(entity.id === 'ball' && sensor.water){
+              var start = _.find(level.entities, { id: 'ball' });
+              box.setPosition(ball.id, start.x / box.scale, start.y / box.scale);
+              box.setLinearVelocity(ball.id, 0, 0);
+              box.setAngularVelocity(ball.id, 0);
+              ui.setTime('waterTime');
+              // exit early so other modifiers don't take effect
+              return false;
+            } else if(entity.id === 'ball' && sensor.sand){
+              // TODO: can we apply friction to the ball instead of this?
+              box.setLinearVelocity(ball.id, ball.linearVelocity.x * SLOWDOWN_PERCENTAGE, ball.linearVelocity.y * SLOWDOWN_PERCENTAGE);
+              box.setAngularVelocity(ball.id,  ball.angularVelocity * SLOWDOWN_PERCENTAGE);
+            } else if(sensor.type === 'Rectangle' || sensor.type === 'Polygon'){
+              box.applyImpulseDegrees(entity.id, sensor.impulseAngle, ZONE_IMPULSE * sensor.impulsePercentage);
+            } else {
+              if(sensor.impulseInward){
+                box.applyImpulse(entity.id, radiansFromCenter(sensor, entity) + Math.PI, ZONE_IMPULSE * sensor.impulsePercentage);
+              } else {
+                box.applyImpulse(entity.id, radiansFromCenter(sensor, entity), ZONE_IMPULSE * sensor.impulsePercentage);
+              }
+            }
+
+          });
         });
       }
     }
