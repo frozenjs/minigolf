@@ -1,0 +1,29 @@
+{
+  "name": "minigolf",
+  "version": "0.0.0",
+  "homepage": "https://github.com/frozenjs/minigolf",
+  "authors": [
+    "Blaine Bublitz <blaine@iceddev.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "main": [
+    "firefox-install", "firefox-landscape", "src/game.js"
+  ],
+  "dependencies": {
+    "frozen": "~0.4.2",
+    "firefox-install": "~0.1.0",
+    "firefox-landscape": "~0.1.0",
+    "rave": "~0.0.7",
+    "dojo": "~1.9.3",
+    "dcl": "~1.1.1"
+  },
+  "moduleType": "amd"
+}
