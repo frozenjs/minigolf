@@ -2,10 +2,7 @@ define([
   './levelData',
   'lodash',
   'frozen/utils/scalePoints',
-  'frozen/utils/radiansFromCenter',
-  'frozen/plugins/loadSound!sounds/clack',
-  'frozen/plugins/loadSound!sounds/hole',
-  'frozen/plugins/loadSound!sounds/laugh'
+  'frozen/utils/radiansFromCenter'
 ], function(levelData, _, scalePoints, radiansFromCenter, clack, holeSound, laughSound){
 
   'use strict';

@@ -1,7 +1,7 @@
 define([
   'dcl',
   './Ball',
-  'frozen/plugins/loadImage!images/woodball.png'
+  'rave-frozen-loadImage!images/woodball.png'
 ], function(dcl, Ball, woodball){
 
   'use strict';

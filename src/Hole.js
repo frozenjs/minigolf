@@ -2,7 +2,7 @@ define([
   'dcl',
   'dojo/has',
   'frozen/box2d/entities/Circle',
-  'frozen/plugins/loadImage!images/hole.png'
+  'rave-frozen-loadImage!images/hole.png'
 ], function(dcl, has, Circle, hole){
 
   'use strict';

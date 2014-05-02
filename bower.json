@@ -15,13 +15,23 @@
     "tests"
   ],
   "main": [
-    "firefox-install", "firefox-landscape", "src/game.js"
+    "firefox-install",
+    "firefox-landscape",
+    "src/game.js"
   ],
+  "rave": {
+    "override": {
+      "dojo": {
+        "moduleType": "amd"
+      }
+    }
+  },
   "dependencies": {
+    "rave-frozen-loadImage": "0.0.0",
     "frozen": "~0.4.2",
     "firefox-install": "~0.1.0",
     "firefox-landscape": "~0.1.0",
-    "rave": "~0.0.7",
+    "rave": "~0.1.0",
     "dojo": "~1.9.3",
     "dcl": "~1.1.1"
   },

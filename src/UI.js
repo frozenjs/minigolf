@@ -1,8 +1,7 @@
 define([
   './levelData',
   './getHoleScoreName',
-  'dcl',
-  'dojo/domReady!'
+  'dcl'
 ], function(levelData, getHoleScoreName, dcl){
 
   'use strict';

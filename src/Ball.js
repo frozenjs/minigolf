@@ -1,7 +1,7 @@
 define([
   'dcl',
   'frozen/box2d/entities/Circle',
-  'frozen/plugins/loadImage!images/ball.png'
+  'rave-frozen-loadImage!images/ball.png'
 ], function(dcl, Circle, ballTexture){
 
   'use strict';

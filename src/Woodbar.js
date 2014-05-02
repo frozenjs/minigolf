@@ -1,7 +1,7 @@
 define([
   'dcl',
   'frozen/box2d/entities/Rectangle',
-  'frozen/plugins/loadImage!images/woodbar.png'
+  'rave-frozen-loadImage!images/woodbar.png'
 ], function(dcl, Rectangle, woodbar){
 
   'use strict';
