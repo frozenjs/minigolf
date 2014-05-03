@@ -20,7 +20,7 @@
     "src/game.js"
   ],
   "rave": {
-    "override": {
+    "overrides": {
       "dojo": {
         "moduleType": "amd"
       }
@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "rave-frozen-loadImage": "0.0.0",
+    "rave-dojo-has": "0.0.0",
     "frozen": "~0.4.2",
     "firefox-install": "~0.1.0",
     "firefox-landscape": "~0.1.0",

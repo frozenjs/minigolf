@@ -2,9 +2,9 @@ define([
   'dcl',
   'frozen/utils/distance',
   'frozen/utils/radiansFromCenter',
-  'rave-frozen-loadImage!images/arrowhead.png',
-  'rave-frozen-loadImage!images/arrowmid.png',
-  'rave-frozen-loadImage!images/arrowback.png'
+  'frozen/plugins/loadImage!images/arrowhead.png',
+  'frozen/plugins/loadImage!images/arrowmid.png',
+  'frozen/plugins/loadImage!images/arrowback.png'
 ], function(dcl, distance, radiansFromCenter, arrowhead, arrowmid, arrowback){
 
   'use strict';
